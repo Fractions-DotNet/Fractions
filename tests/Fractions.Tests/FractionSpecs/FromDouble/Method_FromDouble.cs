@@ -301,10 +301,10 @@ public class When_a_fraction_is_created_from_double : Spec {
 
     [Test]
     public void ToDouble_returns_an_approximation() {
-        var approximateValue = _fraction.ToDouble();
+        var approximateValue = _fraction.ToDouble(); // this is no longer returning 0 
 
         Math.Abs(approximateValue)
             .Should()
-            .BeLessThanOrEqualTo(double.Epsilon);
+            .BeLessThanOrEqualTo(2.5 * VerySmallValue, "The last digit loses accuracy");
     }
 }

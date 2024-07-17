@@ -10,11 +10,17 @@ public readonly partial struct Fraction {
 
     // NaN != NaN : True -> see https://learn.microsoft.com/en-us/dotnet/api/system.double.nan?view=net-8.0#system-double-nan
     public static bool operator !=(Fraction left, Fraction right) => !left.Equals(right) || (left.IsNaN && right.IsNaN);
-
+    
     public static Fraction operator +(Fraction a, Fraction b) => a.Add(b);
+    
+    public static Fraction operator ++(Fraction a) => a.Add(One);
+    
+    public static Fraction operator +(Fraction a) => a;
 
     public static Fraction operator -(Fraction a, Fraction b) => a.Subtract(b);
 
+    public static Fraction operator --(Fraction a) => a.Add(MinusOne);
+    
     public static Fraction operator -(Fraction a) => a.Negate();
 
     public static Fraction operator *(Fraction a, Fraction b) => a.Multiply(b);

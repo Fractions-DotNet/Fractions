@@ -1,6 +1,8 @@
 ﻿#nullable enable
 
-#if !NET
+#if NET
+using Fractions.Properties;
+#else
 using System.Linq;
 #endif
 using System;
@@ -109,6 +111,67 @@ public readonly partial struct Fraction {
     }
 
 #if NET
+    /// <inheritdoc />
+    public static Fraction Parse(ReadOnlySpan<char> s, IFormatProvider? provider) {
+        return Parse(s, NumberStyles.Any, provider);
+    }
+
+    /// <inheritdoc />
+    public static Fraction Parse(ReadOnlySpan<char> s, NumberStyles style, IFormatProvider? provider) {
+        return TryParse(s, style, provider, out var fraction) ? fraction : throw new FormatException(string.Format(Resources.CannotConvertToFraction, s.ToString()));
+    }
+
+    /// <summary>
+    ///     Parses a string representation of either a fraction or decimal number into a Fraction object.
+    /// </summary>
+    /// <param name="s">The string representation of the quantity value.</param>
+    /// <param name="provider">
+    ///     A NumberStyles value that indicates the style elements that can be present in
+    ///     valueString.
+    /// </param>
+    /// <returns>A Fraction object that represents the parsed string.</returns>
+    /// <exception cref="System.ArgumentNullException">Thrown when the provided string argument is null.</exception>
+    /// <exception cref="System.FormatException">
+    ///     Thrown when the format of the provided string argument is invalid and cannot
+    ///     be successfully parsed into a Fraction.
+    /// </exception>
+    static Fraction IParsable<Fraction>.Parse(string s, IFormatProvider? provider) {
+        return FromString(s, NumberStyles.Any, provider);
+    }
+
+    /// <inheritdoc />
+    public static bool TryParse(string? s, IFormatProvider? provider, out Fraction result) {
+        return TryParse(s, NumberStyles.Any, provider, out result);
+    }
+
+    /// <summary>
+    ///     Parses a string representation of a quantity value into a Fraction object.
+    /// </summary>
+    /// <param name="s">The string representation of the quantity value.</param>
+    /// <param name="style">
+    ///     A NumberStyles value that indicates the style elements that can be present in
+    ///     valueString.
+    /// </param>
+    /// <param name="provider">
+    ///     An IFormatProvider that supplies culture-specific formatting information about
+    ///     valueString.
+    /// </param>
+    /// <returns>A Fraction object that represents the parsed string.</returns>
+    /// <exception cref="System.ArgumentNullException">Thrown when the provided string argument is null.</exception>
+    /// <exception cref="System.FormatException">
+    ///     Thrown when the format of the provided string argument is invalid and cannot
+    ///     be successfully parsed into a Fraction.
+    /// </exception>
+    static Fraction INumberBase<Fraction>.Parse(string s, NumberStyles style, IFormatProvider? provider) {
+        return FromString(s, style, provider);
+    }
+    
+    /// <inheritdoc />
+    public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, out Fraction result)
+    {
+        return TryParse(s, NumberStyles.Any, provider, out result);
+    }
+    
     /// <summary>
     ///     Attempts to parse a string of characters into a fraction.
     /// </summary>

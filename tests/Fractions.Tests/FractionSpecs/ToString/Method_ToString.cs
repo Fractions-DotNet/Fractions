@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Numerics;
+using FluentAssertions;
 using Fractions.Formatter;
 using NUnit.Framework;
 using Tests.Fractions;
@@ -228,4 +229,35 @@ public class When_the_user_calls_ToString_using_a_format_string : Spec {
         IFormatProvider cultureInfo) {
         return fraction.ToString(format, cultureInfo);
     }
+
+    #if NET
+    
+    [Test]
+    [TestCaseSource(nameof(TestCases))]
+    public string The_text_output_when_using_try_format_should_be_the_expected_one(Fraction fraction, string format,
+        IFormatProvider cultureInfo) {
+        // Arrange
+        Span<char> resultSpan = stackalloc char[20];
+        // Act
+        var succeeded = fraction.TryFormat(resultSpan, out var charsWritten, format.AsSpan(), cultureInfo);
+        var convertedString = resultSpan[..charsWritten].ToString();
+        // Assert
+        succeeded.Should().Imply(!string.IsNullOrEmpty(convertedString));
+        charsWritten.Should().Be(convertedString.Length);
+        return convertedString;
+    }
+    
+    [Test]
+    public void The_result_of_try_format_is_false_when_the_span_size_is_smaller_than_the_expected_result() {
+        // Arrange
+        var fraction = new Fraction(1, 2);
+        Span<char> resultSpan = stackalloc char[2];
+        // Act
+        var succeeded = fraction.TryFormat(resultSpan, out var charsWritten, null, CultureInfo.InvariantCulture);
+        // Assert
+        succeeded.Should().BeFalse();
+        charsWritten.Should().Be(0);
+    }
+
+    #endif
 }

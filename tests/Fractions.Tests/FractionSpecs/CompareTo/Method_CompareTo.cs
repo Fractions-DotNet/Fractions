@@ -22,6 +22,8 @@ public class When_comparing_two_fractions : Spec {
             yield return new TestCaseData(new Fraction(-100, -1000, false), new Fraction(-10, -100, false)).Returns(0);
             yield return new TestCaseData(new Fraction(0.2m), new Fraction(-2, -10, false)).Returns(0);
             yield return new TestCaseData(new Fraction(-2, -10, false), new Fraction(0.2m)).Returns(0);
+            yield return new TestCaseData(new Fraction(3, 3, false), new Fraction(2, 2, false)).Returns(0);
+            yield return new TestCaseData(new Fraction(4, 3, false), new Fraction(3, 2, false)).Returns(-1);
 
             yield return new TestCaseData(new Fraction(0.1m), new Fraction(-2, -10, false)).Returns(-1);
             yield return new TestCaseData(new Fraction(0.3m), new Fraction(-2, -10, false)).Returns(1);
@@ -35,6 +37,8 @@ public class When_comparing_two_fractions : Spec {
             yield return new TestCaseData(new Fraction(-1, 10), new Fraction(10, -100, false)).Returns(0);
             yield return new TestCaseData(new Fraction(-1, 10), new Fraction(-10, 100, false)).Returns(0);
             yield return new TestCaseData(new Fraction(-100, 1000, false), new Fraction(10, -100, false)).Returns(0);
+            yield return new TestCaseData(new Fraction(-3, 3, false), new Fraction(-2, 2, false)).Returns(0);
+            yield return new TestCaseData(new Fraction(-4, 3, false), new Fraction(-3, 2, false)).Returns(1);
             // numbers with opposite signs
             yield return new TestCaseData(Fraction.One, Fraction.MinusOne).Returns(1);
             yield return new TestCaseData(Fraction.MinusOne, Fraction.One).Returns(-1);
@@ -505,5 +509,24 @@ public class When_comparing_two_fractions : Spec {
         var result = FractionsToSort.OrderByDescending(fraction => fraction).ToArray();
         // Assert
         result.Should().BeInDescendingOrder((a, b) => a.ToDouble().CompareTo(b.ToDouble()));
+    }
+
+    [Test]
+    public void The_CompareTo_method_should_return_1_if_the_other_is_null() {
+        Assert.That(Fraction.One.CompareTo(null), Is.EqualTo(1));
+        Assert.That(Fraction.MinusOne.CompareTo(null), Is.EqualTo(1));
+    }
+
+    [Test]
+    public void The_CompareTo_method_should_throw_ArgumentException_if_given_another_type() {
+        // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+        Invoking(() => Fraction.One.CompareTo("string")).Should().Throw<ArgumentException>();
+    }
+
+    [Test]
+    public void The_CompareTo_method_given_a_valid_object_should_return_the_expected_result() {
+        object minusOne = Fraction.MinusOne;
+        Assert.That(Fraction.Zero.CompareTo(minusOne), Is.EqualTo(1));
+        Assert.That(Fraction.MinusOne.CompareTo(minusOne), Is.EqualTo(0));
     }
 }

@@ -14,7 +14,14 @@ namespace Fractions;
 [TypeConverter(typeof(FractionTypeConverter))]
 [StructLayout(LayoutKind.Sequential)]
 [DebuggerTypeProxy(typeof(FractionDebugView))]
-public readonly partial struct Fraction : IEquatable<Fraction>, IComparable, IComparable<Fraction>, IFormattable {
+public readonly partial struct Fraction :
+#if NET
+    INumber<Fraction>
+#else
+    IEquatable<Fraction>, IComparable, IComparable<Fraction>, IFormattable 
+#endif
+
+{
 #pragma warning disable IDE1006
     internal static readonly BigInteger TEN = new(10);
 
@@ -146,4 +153,179 @@ public readonly partial struct Fraction : IEquatable<Fraction>, IComparable, ICo
     /// The fraction's state.
     /// </summary>
     public FractionState State => _normalizationNotApplied ? FractionState.Unknown : FractionState.IsNormalized;
+
+
+    #region INumber definitions
+
+#if NET7_0_OR_GREATER
+    static int INumberBase<Fraction>.Radix => 10;
+    static Fraction IAdditiveIdentity<Fraction, Fraction>.AdditiveIdentity => Zero;
+    static Fraction IMultiplicativeIdentity<Fraction, Fraction>.MultiplicativeIdentity => One;
+
+    /// <summary>Determines if a value represents zero or a positive real number.</summary>
+    /// <param name="value">The value to be checked.</param>
+    /// <returns>
+    ///     <see langword="true" /> if <paramref name="value" /> represents (positive) zero or a positive real number;
+    ///     otherwise, <see langword="false" />.
+    /// </returns>
+    static bool INumberBase<Fraction>.IsPositive(Fraction value) {
+        return value.IsPositive;
+    }
+
+    /// <summary>Determines if a value represents a negative real number.</summary>
+    /// <param name="value">The value to be checked.</param>
+    /// <returns>
+    ///     <see langword="true" /> if <paramref name="value" /> represents negative zero or a negative real number; otherwise,
+    ///     <see langword="false" />.
+    /// </returns>
+    static bool INumberBase<Fraction>.IsNegative(Fraction value) {
+        return value.IsNegative;
+    }
+
+    /// <summary>Determines if a value is zero.</summary>
+    /// <param name="value">The value to be checked.</param>
+    /// <returns>
+    ///     <see langword="true" /> if <paramref name="value" /> is zero; otherwise, <see langword="false" />.
+    /// </returns>
+    static bool INumberBase<Fraction>.IsZero(Fraction value) {
+        return value.IsZero;
+    }
+
+    static bool INumberBase<Fraction>.IsNormal(Fraction value) {
+        return IsFinite(value);
+    }
+
+    static bool INumberBase<Fraction>.IsRealNumber(Fraction value) {
+        return true;
+    }
+
+    static bool INumberBase<Fraction>.IsComplexNumber(Fraction value) {
+        return false;
+    }
+
+    static bool INumberBase<Fraction>.IsImaginaryNumber(Fraction value) {
+        return false;
+    }
+
+    static bool INumberBase<Fraction>.IsSubnormal(Fraction value) {
+        return false;
+    }
+
+    /// <summary>Determines if a value is infinite.</summary>
+    /// <param name="value">The value to be checked.</param>
+    /// <returns>
+    ///     <see langword="true" /> if <paramref name="value" /> is infinite; otherwise, <see langword="false" />.
+    /// </returns>
+    static bool INumberBase<Fraction>.IsInfinity(Fraction value) {
+        return value.IsInfinity;
+    }
+
+    /// <summary>Determines if a value is positive infinity.</summary>
+    /// <param name="value">The value to be checked.</param>
+    /// <returns>
+    ///     <see langword="true" /> if <paramref name="value" /> is positive infinity; otherwise, <see langword="false" />.
+    /// </returns>
+    static bool INumberBase<Fraction>.IsPositiveInfinity(Fraction value) {
+        return value.IsPositiveInfinity;
+    }
+
+    /// <summary>Determines if a value is negative infinity.</summary>
+    /// <param name="value">The value to be checked.</param>
+    /// <returns>
+    ///     <see langword="true" /> if <paramref name="value" /> is negative infinity; otherwise, <see langword="false" />.
+    /// </returns>
+    static bool INumberBase<Fraction>.IsNegativeInfinity(Fraction value) {
+        return value.IsNegativeInfinity;
+    }
+
+    /// <summary>Determines if a value is NaN.</summary>
+    /// <param name="value">The value to be checked.</param>
+    /// <returns>
+    ///     <see langword="true" /> if <paramref name="value" /> is NaN; otherwise, <see langword="false" />.
+    /// </returns>
+    static bool INumberBase<Fraction>.IsNaN(Fraction value) {
+        return value.IsNaN;
+    }
+#endif
+
+    /// <summary>
+    ///     Determines whether the given Fraction is in canonical form.
+    /// </summary>
+    /// <param name="value">The Fraction to check.</param>
+    /// <returns>True if the Fraction is in canonical form, otherwise false.</returns>
+    /// <remarks>
+    ///     A Fraction is considered to be in canonical form if its denominator is one,
+    ///     or if its numerator and denominator are coprime numbers (their greatest common divisor is one).
+    /// </remarks>
+    public static bool IsCanonical(Fraction value) {
+        var numerator = value.Numerator;
+        var denominator = value.Denominator;
+        if (denominator.IsOne) {
+            return true;
+        }
+
+        if (numerator.IsZero) {
+            return denominator.IsZero; // if we want to consider NaN as "canonical"
+        }
+
+        if (denominator.IsZero) {
+            return numerator.IsOne || numerator == BigInteger.MinusOne;
+        }
+
+        return BigInteger.GreatestCommonDivisor(numerator, denominator).IsOne;
+    }
+
+    /// <summary>Determines if a value represents an even integral number.</summary>
+    /// <param name="value">The value to be checked.</param>
+    /// <returns>
+    ///     <see langword="true" /> if <paramref name="value" /> is an even integer; otherwise, <see langword="false" />.
+    /// </returns>
+    public static bool IsEvenInteger(Fraction value) {
+        var fraction = value.Reduce();
+        return fraction.Denominator.IsOne && fraction.Numerator.IsEven;
+    }
+
+    /// <summary>Determines if a value is finite.</summary>
+    /// <param name="value">The value to be checked.</param>
+    /// <returns>
+    ///     <see langword="true" /> if <paramref name="value" /> is finite; otherwise, <see langword="false" />.
+    /// </returns>
+    public static bool IsFinite(Fraction value) {
+        return !value.Denominator.IsZero;
+    }
+
+    /// <summary>Determines if a value represents an integral number.</summary>
+    /// <param name="value">The value to be checked.</param>
+    /// <returns>
+    ///     <see langword="true" /> if <paramref name="value" /> is an integer; otherwise, <see langword="false" />.
+    /// </returns>
+    public static bool IsInteger(Fraction value) {
+        var denominator = BigInteger.Abs(value.Denominator);
+        if (denominator.IsOne) {
+            return true;
+        }
+
+        if (denominator.IsZero) {
+            return false;
+        }
+
+        var numerator = BigInteger.Abs(value.Numerator);
+        if (numerator.IsZero) {
+            return true;
+        }
+        
+        return numerator >= denominator && (numerator % denominator).IsZero;
+    }
+
+    /// <summary>Determines if a value represents an odd integral number.</summary>
+    /// <param name="value">The value to be checked.</param>
+    /// <returns>
+    ///     <see langword="true" /> if <paramref name="value" /> is an odd integer; otherwise, <see langword="false" />.
+    /// </returns>
+    public static bool IsOddInteger(Fraction value) {
+        var fraction = value.Reduce();
+        return fraction.Denominator.IsOne && !fraction.Numerator.IsEven;
+    }
+
+    #endregion
 }

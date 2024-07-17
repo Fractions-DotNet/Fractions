@@ -52,4 +52,31 @@ public readonly partial struct Fraction {
         formatProvider?.GetFormat(GetType()) is ICustomFormatter formatter
             ? formatter.Format(format, this, formatProvider)
             : DefaultFractionFormatter.Instance.Format(format, this, formatProvider);
+
+#if NET
+    /// <inheritdoc/>
+    public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+    {
+        string formattedValue;
+        if (provider?.GetFormat(typeof(Fraction)) is ICustomFormatter formatter)
+        {
+            formattedValue = formatter.Format(format.ToString(), this, provider);
+        }
+        else
+        {
+            // TODO this overload should be pushed to the DefaultFractionFormatter and DecimalNotationFormatter
+            formattedValue = DefaultFractionFormatter.Instance.Format(format.ToString(), this, provider);
+        }
+
+        if (formattedValue.Length > destination.Length || string.IsNullOrEmpty(formattedValue))
+        {
+            charsWritten = 0;
+            return false;
+        }
+
+        formattedValue.CopyTo(destination);
+        charsWritten = formattedValue.Length;
+        return true;
+    }
+#endif
 }

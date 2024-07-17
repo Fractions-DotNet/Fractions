@@ -19,6 +19,24 @@ public class When_the_user_adds_two_fractions : Spec {
                     BigInteger.Parse("18446744073709551613"),
                     BigInteger.Parse("85070591730234615838173535747377725442")
                 ));
+            yield return new TestCaseData(new Fraction(1, 2), new Fraction(1, 2), Fraction.One);
+            yield return new TestCaseData(new Fraction(2, 4, false), new Fraction(2, 4, false), new Fraction(4, 4, false));
+            yield return new TestCaseData(new Fraction(2), new Fraction(1, 2), new Fraction(5, 2));
+            yield return new TestCaseData(new Fraction(2), new Fraction(2, 4, false), new Fraction(10, 4, false));
+            yield return new TestCaseData(new Fraction(1, 2), new Fraction(2), new Fraction(5, 2));
+            yield return new TestCaseData(new Fraction(2, 4, false), new Fraction(2), new Fraction(10, 4, false));
+            yield return new TestCaseData(new Fraction(1, 2), new Fraction(1, 4), new Fraction(3, 4));
+            yield return new TestCaseData(new Fraction(1, 4), new Fraction(1, 2), new Fraction(3, 4));
+            yield return new TestCaseData(new Fraction(1, 4), new Fraction(1, 6), new Fraction(5, 12));
+            yield return new TestCaseData(new Fraction(2, 4, false), new Fraction(2, 8, false), new Fraction(6, 8, false));
+            yield return new TestCaseData(new Fraction(2, 8, false), new Fraction(2, 4, false), new Fraction(6, 8, false));
+            yield return new TestCaseData(new Fraction(1, 2, false), new Fraction(2, 3), new Fraction(7, 6, false));
+            yield return new TestCaseData(new Fraction(-1, -2, false), new Fraction(2, 3, false), new Fraction(7, 6, false));
+            yield return new TestCaseData(new Fraction(-1, -2, false), new Fraction(-2, -3, false), new Fraction(7, 6, false));
+            yield return new TestCaseData(new Fraction(1, 2, false), new Fraction(-2, -3, false), new Fraction(7, 6, false));
+            yield return new TestCaseData(Fraction.One, Fraction.PositiveInfinity, Fraction.PositiveInfinity);
+            yield return new TestCaseData(Fraction.One, Fraction.NegativeInfinity, Fraction.NegativeInfinity);
+            yield return new TestCaseData(Fraction.One, Fraction.NaN, Fraction.NaN);
 
             // positive infinity
             yield return new TestCaseData(Fraction.PositiveInfinity, Fraction.PositiveInfinity,
@@ -59,5 +77,24 @@ public class When_the_user_adds_two_fractions : Spec {
     public void It_should_return_the_expected_result(Fraction a, Fraction b, Fraction expected) {
         var result = a.Add(b);
         Assert.That(result, Is.EqualTo(expected).Using(StrictTestComparer.Instance));
+    }
+}
+
+[TestFixture]
+public class When_using_the_incrementing_operator : Spec {
+    [Test]
+    public void It_should_increment_the_fraction_by_one() {
+        var fraction = new Fraction(1, 2);
+        fraction++;
+        Assert.That(fraction, Is.EqualTo(new Fraction(3, 2)));
+    }
+}
+
+[TestFixture]
+public class When_using_the_unary_plus_operator : Spec {
+    [Test]
+    public void It_should_return_the_same_value() {
+        Assert.That(Fraction.One, Is.EqualTo(+Fraction.One));
+        Assert.That(Fraction.MinusOne, Is.EqualTo(+Fraction.MinusOne));
     }
 }

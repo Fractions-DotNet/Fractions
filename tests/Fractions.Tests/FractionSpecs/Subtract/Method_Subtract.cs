@@ -186,3 +186,13 @@ public class When_subtracting_with_infinity {
         Assert.That(result, Is.EqualTo(expected).Using(StrictTestComparer.Instance));
     }
 }
+
+[TestFixture]
+public class When_using_the_decrementing_operator : Spec {
+    [Test]
+    public void It_should_decrement_the_fraction_by_one() {
+        var fraction = new Fraction(3, 2);
+        fraction--;
+        Assert.That(fraction, Is.EqualTo(new Fraction(1, 2)));
+    }
+}

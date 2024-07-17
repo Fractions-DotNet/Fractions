@@ -113,6 +113,11 @@ public class When_converting_NaN : Spec {
     public void ToDecimal_should_throw_a_DivideByZeroException() {
         Invoking(() => Fraction.NaN.ToDecimal()).Should().Throw<DivideByZeroException>();
     }
+    
+    [Test]
+    public void ToDecimalSaturating_should_return_Zero() {
+        Fraction.NaN.ToDecimalSaturating().Should().Be(0);
+    }
 
     [Test]
     public void ToInt32_should_throw_a_DivideByZeroException() {
@@ -151,7 +156,12 @@ public class When_converting_PositiveInfinity : Spec {
     public void ToDecimal_should_throw_a_DivideByZeroException() {
         Invoking(() => Fraction.PositiveInfinity.ToDecimal()).Should().Throw<DivideByZeroException>();
     }
-
+    
+    [Test]
+    public void ToDecimalSaturating_should_return_MaxValue() {
+        Fraction.PositiveInfinity.ToDecimalSaturating().Should().Be(decimal.MaxValue);
+    }
+    
     [Test]
     public void ToInt32_should_throw_a_DivideByZeroException() {
         Invoking(() => Fraction.PositiveInfinity.ToInt32()).Should().Throw<DivideByZeroException>();
@@ -189,6 +199,11 @@ public class When_converting_NegativeInfinity : Spec {
     public void ToDecimal_should_throw_a_DivideByZeroException() {
         Invoking(() => Fraction.NegativeInfinity.ToDecimal()).Should().Throw<DivideByZeroException>();
     }
+    
+    [Test]
+    public void ToDecimalSaturating_should_return_MaxValue() {
+        Fraction.NegativeInfinity.ToDecimalSaturating().Should().Be(decimal.MinValue);
+    }
 
     [Test]
     public void ToInt32_should_throw_a_DivideByZeroException() {
@@ -218,5 +233,209 @@ public class When_converting_NegativeInfinity : Spec {
     [Test]
     public void ToDouble_should_return_NegativeInfinity() {
         Fraction.NegativeInfinity.ToDouble().Should().Be(double.NegativeInfinity);
+    }
+}
+
+[TestFixture]
+public class When_fraction_is_converted_to_double : Spec {
+    private static IEnumerable TestCases {
+        get {
+            var largeNumber = BigInteger.Pow(10, 309); // larger than double.MaxValue
+            // Zero cases
+            yield return new TestCaseData(Fraction.Zero).Returns(0.0);
+            yield return new TestCaseData(new Fraction(0, 10, false)).Returns(0.0);
+            yield return new TestCaseData(new Fraction(0, -10, false)).Returns(0.0);
+            yield return new TestCaseData(new Fraction(0, largeNumber, false)).Returns(0.0).SetName("0 / largeNumber");
+            yield return new TestCaseData(new Fraction(0, -largeNumber, false)).Returns(0.0).SetName("0 / -largeNumber");
+            // Positive cases
+            yield return new TestCaseData(new Fraction(2)).Returns(2.0);
+            yield return new TestCaseData(new Fraction(-2, -1, false)).Returns(2.0);
+            yield return new TestCaseData(new Fraction(1, 2, false)).Returns(0.5);
+            yield return new TestCaseData(new Fraction(-1, -2, false)).Returns(0.5);
+            yield return new TestCaseData(new Fraction(1, 3, false)).Returns(1.0 / 3.0);
+            yield return new TestCaseData(new Fraction(-1, -3, false)).Returns(1.0 / 3.0);
+            yield return new TestCaseData(new Fraction(largeNumber, BigInteger.One, false)).Returns(double.PositiveInfinity).SetName("largeNumber / 1");
+            yield return new TestCaseData(new Fraction(-largeNumber, BigInteger.MinusOne, false)).Returns(double.PositiveInfinity).SetName("-largeNumber / -1");
+            yield return new TestCaseData(new Fraction(largeNumber, largeNumber, false)).Returns(1.0).SetName("largeNumber / largeNumber");
+            yield return new TestCaseData(new Fraction(-largeNumber, -largeNumber, false)).Returns(1.0).SetName("-largeNumber / -largeNumber");
+            yield return new TestCaseData(new Fraction(2 * largeNumber, largeNumber, false)).Returns(2.0).SetName("2 * largeNumber / largeNumber");
+            yield return new TestCaseData(new Fraction(-2 * largeNumber, -largeNumber, false)).Returns(2.0).SetName("-2 * largeNumber / -largeNumber");
+            yield return new TestCaseData(new Fraction(largeNumber, 2 * largeNumber, false)).Returns(0.5).SetName("largeNumber / 2 * largeNumber");
+            yield return new TestCaseData(new Fraction(-largeNumber, -2 * largeNumber, false)).Returns(0.5).SetName("-largeNumber / -2 * largeNumber");
+            yield return new TestCaseData(new Fraction(2 * largeNumber, 3 * largeNumber, false)).Returns(2.0 / 3.0).SetName("2 * largeNumber / 3 * largeNumber");
+            yield return new TestCaseData(new Fraction(-3 * largeNumber, -2 * largeNumber, false)).Returns(3.0 / 2.0).SetName("-3 * largeNumber / -2 * largeNumber");
+            yield return new TestCaseData(new Fraction(largeNumber * largeNumber, largeNumber, false)).Returns(double.PositiveInfinity).SetName("largeNumber^2 / largeNumber");
+            yield return new TestCaseData(new Fraction(BigInteger.One, largeNumber, false)).Returns(0.0).SetName("1 / largeNumber");
+            yield return new TestCaseData(new Fraction(1000, largeNumber, false)).Returns(new Fraction(1000, largeNumber).ToDouble()).SetName("1000 / largeNumber");
+            // Negative cases
+            yield return new TestCaseData(new Fraction(-2)).Returns(-2.0);
+            yield return new TestCaseData(new Fraction(2, -1, false)).Returns(-2.0);
+            yield return new TestCaseData(new Fraction(-1, 2, false)).Returns(-0.5);
+            yield return new TestCaseData(new Fraction(1, -2, false)).Returns(-0.5);
+            yield return new TestCaseData(new Fraction(-1, 3, false)).Returns(-1.0 / 3.0);
+            yield return new TestCaseData(new Fraction(1, -3, false)).Returns(-1.0 / 3.0);
+            yield return new TestCaseData(new Fraction(largeNumber, BigInteger.MinusOne, false)).Returns(double.NegativeInfinity).SetName("largeNumber / -1");
+            yield return new TestCaseData(new Fraction(-largeNumber, BigInteger.One, false)).Returns(double.NegativeInfinity).SetName("-largeNumber / 1");
+            yield return new TestCaseData(new Fraction(-largeNumber, largeNumber, false)).Returns(-1.0).SetName("-largeNumber / largeNumber");
+            yield return new TestCaseData(new Fraction(largeNumber, -largeNumber, false)).Returns(-1.0).SetName("largeNumber / -largeNumber");
+            yield return new TestCaseData(new Fraction(-2 * largeNumber, largeNumber, false)).Returns(-2.0).SetName("-2 * largeNumber / largeNumber");
+            yield return new TestCaseData(new Fraction(2 * largeNumber, -largeNumber, false)).Returns(-2.0).SetName("2 * largeNumber / -largeNumber");
+            yield return new TestCaseData(new Fraction(-largeNumber, 2 * largeNumber, false)).Returns(-0.5).SetName("-largeNumber / 2 * largeNumber");
+            yield return new TestCaseData(new Fraction(largeNumber, -2 * largeNumber, false)).Returns(-0.5).SetName("largeNumber / -2 * largeNumber");
+            yield return new TestCaseData(new Fraction(-2 * largeNumber, 3 * largeNumber, false)).Returns(-2.0 / 3.0).SetName("-2 * largeNumber / 3 * largeNumber");
+            yield return new TestCaseData(new Fraction(3 * largeNumber, -2 * largeNumber, false)).Returns(-3.0 / 2.0).SetName("3 * largeNumber / -2 * largeNumber");
+            yield return new TestCaseData(new Fraction(largeNumber * largeNumber, largeNumber, false)).Returns(double.PositiveInfinity).SetName("largeNumber^2 / largeNumber");
+            yield return new TestCaseData(new Fraction(-largeNumber * largeNumber, largeNumber, false)).Returns(double.NegativeInfinity).SetName("-largeNumber^2 / largeNumber");
+        }
+    }
+
+    [Test]
+    [TestCaseSource(nameof(TestCases))]
+    public double Result_should_match_expected_value(Fraction fraction) {
+        return fraction.ToDouble();
+    }
+}
+
+[TestFixture]
+public class When_fraction_is_converted_to_decimal : Spec {
+    private static IEnumerable TestCases {
+        get {
+            var largeNumber = 2 * new BigInteger(decimal.MaxValue);
+            // Zero cases
+            yield return new TestCaseData(Fraction.Zero).Returns(0.0m);
+            yield return new TestCaseData(new Fraction(0, 10, false)).Returns(0.0m);
+            yield return new TestCaseData(new Fraction(0, -10, false)).Returns(0.0m);
+            yield return new TestCaseData(new Fraction(0, largeNumber, false)).Returns(0.0m).SetName("0 / largeNumber");
+            yield return new TestCaseData(new Fraction(0, -largeNumber, false)).Returns(0.0m).SetName("0 / -largeNumber");
+            // Positive cases
+            yield return new TestCaseData(new Fraction(2)).Returns(2.0m);
+            yield return new TestCaseData(new Fraction(-2, -1, false)).Returns(2.0m);
+            yield return new TestCaseData(new Fraction(1, 2, false)).Returns(0.5m);
+            yield return new TestCaseData(new Fraction(-1, -2, false)).Returns(0.5m);
+            yield return new TestCaseData(new Fraction(1, 3, false)).Returns(1.0m / 3.0m);
+            yield return new TestCaseData(new Fraction(-1, -3, false)).Returns(1.0m / 3.0m);
+            yield return new TestCaseData(new Fraction(largeNumber, largeNumber, false)).Returns(1.0m).SetName("largeNumber / largeNumber");
+            yield return new TestCaseData(new Fraction(-largeNumber, -largeNumber, false)).Returns(1.0m).SetName("-largeNumber / -largeNumber");
+            yield return new TestCaseData(new Fraction(2 * largeNumber, largeNumber, false)).Returns(2.0m).SetName("2 * largeNumber / largeNumber");
+            yield return new TestCaseData(new Fraction(-2 * largeNumber, -largeNumber, false)).Returns(2.0m).SetName("-2 * largeNumber / -largeNumber");
+            yield return new TestCaseData(new Fraction(largeNumber, 2 * largeNumber, false)).Returns(0.5m).SetName("largeNumber / 2 * largeNumber");
+            yield return new TestCaseData(new Fraction(-largeNumber, -2 * largeNumber, false)).Returns(0.5m).SetName("-largeNumber / -2 * largeNumber");
+            yield return new TestCaseData(new Fraction(3 * largeNumber, 2 * largeNumber, false)).Returns(1.5m).SetName("3 * largeNumber / 2 * largeNumber");
+            yield return new TestCaseData(new Fraction(-3 * largeNumber, -2 * largeNumber, false)).Returns(1.5m).SetName("-3 * largeNumber / -2 * largeNumber");
+            yield return new TestCaseData(new Fraction(2 * largeNumber, 3 * largeNumber, false)).Returns(2.0m / 3.0m).SetName("2 * largeNumber / 3 * largeNumber");
+            yield return new TestCaseData(new Fraction(-3 * largeNumber, -2 * largeNumber, false)).Returns(3.0m / 2.0m).SetName("-3 * largeNumber / -2 * largeNumber");
+            // Negative cases
+            yield return new TestCaseData(new Fraction(-2)).Returns(-2.0m);
+            yield return new TestCaseData(new Fraction(2, -1, false)).Returns(-2.0m);
+            yield return new TestCaseData(new Fraction(-1, 2, false)).Returns(-0.5m);
+            yield return new TestCaseData(new Fraction(1, -2, false)).Returns(-0.5m);
+            yield return new TestCaseData(new Fraction(-1, 3, false)).Returns(-1.0m / 3.0m);
+            yield return new TestCaseData(new Fraction(1, -3, false)).Returns(-1.0m / 3.0m);
+            yield return new TestCaseData(new Fraction(-largeNumber, largeNumber, false)).Returns(-1.0m).SetName("-largeNumber / largeNumber");
+            yield return new TestCaseData(new Fraction(largeNumber, -largeNumber, false)).Returns(-1.0m).SetName("largeNumber / -largeNumber");
+            yield return new TestCaseData(new Fraction(-2 * largeNumber, largeNumber, false)).Returns(-2.0m).SetName("-2 * largeNumber / largeNumber");
+            yield return new TestCaseData(new Fraction(2 * largeNumber, -largeNumber, false)).Returns(-2.0m).SetName("2 * largeNumber / -largeNumber");
+            yield return new TestCaseData(new Fraction(-largeNumber, 2 * largeNumber, false)).Returns(-0.5m).SetName("-largeNumber / 2 * largeNumber");
+            yield return new TestCaseData(new Fraction(largeNumber, -2 * largeNumber, false)).Returns(-0.5m).SetName("largeNumber / -2 * largeNumber");
+            yield return new TestCaseData(new Fraction(-3 * largeNumber, 2 * largeNumber, false)).Returns(-1.5m).SetName("-3 * largeNumber / 2 * largeNumber");
+            yield return new TestCaseData(new Fraction(3 * largeNumber, -2 * largeNumber, false)).Returns(-1.5m).SetName("3 * largeNumber / -2 * largeNumber");
+            yield return new TestCaseData(new Fraction(-2 * largeNumber, 3 * largeNumber, false)).Returns(-2.0m / 3.0m).SetName("-2 * largeNumber / 3 * largeNumber");
+            yield return new TestCaseData(new Fraction(3 * largeNumber, -2 * largeNumber, false)).Returns(-3.0m / 2.0m).SetName("3 * largeNumber / -2 * largeNumber");
+        }
+    }
+
+    
+    [Test]
+    [TestCaseSource(nameof(TestCases))]
+    public decimal Result_should_match_expected_value(Fraction fraction) {
+        return fraction.ToDecimal();
+    }
+    
+    [Test]
+    public void An_OverflowException_is_thrown_when_result_is_greater_than_MaxValue() {
+        Invoking(() => (2 * new Fraction(decimal.MaxValue)).ToDecimal())
+            .Should()
+            .Throw<OverflowException>();
+    }
+    
+    [Test]
+    public void An_OverflowException_is_thrown_when_result_is_smaller_than_MinValue() {
+        Invoking(() => (2 * new Fraction(decimal.MinValue)).ToDecimal())
+            .Should()
+            .Throw<OverflowException>();
+    }
+}
+
+[TestFixture]
+public class When_fraction_is_converted_to_decimal_with_saturation : Spec {
+    private static IEnumerable TestCases {
+        get {
+            var largeNumber = 2 * new BigInteger(decimal.MaxValue);
+            // Zero cases
+            yield return new TestCaseData(Fraction.Zero).Returns(0.0m);
+            yield return new TestCaseData(new Fraction(0, 10, false)).Returns(0.0m);
+            yield return new TestCaseData(new Fraction(0, -10, false)).Returns(0.0m);
+            yield return new TestCaseData(new Fraction(0, largeNumber, false)).Returns(0.0m).SetName("0 / largeNumber");
+            yield return new TestCaseData(new Fraction(0, -largeNumber, false)).Returns(0.0m).SetName("0 / -largeNumber");
+            // Positive cases
+            yield return new TestCaseData(new Fraction(2)).Returns(2.0m);
+            yield return new TestCaseData(new Fraction(-2, -1, false)).Returns(2.0m);
+            yield return new TestCaseData(new Fraction(1, 2, false)).Returns(0.5m);
+            yield return new TestCaseData(new Fraction(-1, -2, false)).Returns(0.5m);
+            yield return new TestCaseData(new Fraction(1, 3, false)).Returns(1.0m / 3.0m);
+            yield return new TestCaseData(new Fraction(-1, -3, false)).Returns(1.0m / 3.0m);
+            yield return new TestCaseData(new Fraction(largeNumber, largeNumber, false)).Returns(1.0m).SetName("largeNumber / largeNumber");
+            yield return new TestCaseData(new Fraction(-largeNumber, -largeNumber, false)).Returns(1.0m).SetName("-largeNumber / -largeNumber");
+            yield return new TestCaseData(new Fraction(2 * largeNumber, largeNumber, false)).Returns(2.0m).SetName("2 * largeNumber / largeNumber");
+            yield return new TestCaseData(new Fraction(-2 * largeNumber, -largeNumber, false)).Returns(2.0m).SetName("-2 * largeNumber / -largeNumber");
+            yield return new TestCaseData(new Fraction(largeNumber, 2 * largeNumber, false)).Returns(0.5m).SetName("largeNumber / 2 * largeNumber");
+            yield return new TestCaseData(new Fraction(-largeNumber, -2 * largeNumber, false)).Returns(0.5m).SetName("-largeNumber / -2 * largeNumber");
+            yield return new TestCaseData(new Fraction(3 * largeNumber, 2 * largeNumber, false)).Returns(1.5m).SetName("3 * largeNumber / 2 * largeNumber");
+            yield return new TestCaseData(new Fraction(-3 * largeNumber, -2 * largeNumber, false)).Returns(1.5m).SetName("-3 * largeNumber / -2 * largeNumber");
+            yield return new TestCaseData(new Fraction(2 * largeNumber, 3 * largeNumber, false)).Returns(2.0m / 3.0m).SetName("2 * largeNumber / 3 * largeNumber");
+            yield return new TestCaseData(new Fraction(-3 * largeNumber, -2 * largeNumber, false)).Returns(3.0m / 2.0m).SetName("-3 * largeNumber / -2 * largeNumber");
+            yield return new TestCaseData(Fraction.FromDecimal(decimal.MaxValue)).Returns(decimal.MaxValue).SetName("decimal.MaxValue");
+            yield return new TestCaseData(Fraction.FromDecimal(decimal.MaxValue, false)).Returns(decimal.MaxValue).SetName("decimal.MaxValue(reduce = false)");
+            yield return new TestCaseData(new Fraction(largeNumber, BigInteger.One, false)).Returns(decimal.MaxValue).SetName("largeNumber / 1");
+            yield return new TestCaseData(new Fraction(largeNumber * largeNumber, largeNumber, false)).Returns(decimal.MaxValue).SetName("largeNumber^2 / largeNumber");
+            yield return new TestCaseData(new Fraction(BigInteger.One, largeNumber, false)).Returns(0.0m).SetName("1 / largeNumber");
+            yield return new TestCaseData(new Fraction(BigInteger.MinusOne, -largeNumber, false)).Returns(0.0m).SetName("-1 / -largeNumber");
+            yield return new TestCaseData(new Fraction(largeNumber, largeNumber * largeNumber, false)).Returns(0.0m).SetName("largeNumber / largeNumber^2");
+            yield return new TestCaseData(new Fraction(-largeNumber, -(largeNumber * largeNumber), false)).Returns(0.0m).SetName("-largeNumber / -largeNumber^2");
+            yield return new TestCaseData(new Fraction(40, largeNumber, false)).Returns(20 / decimal.MaxValue).SetName("40 / (2 * decimal.MaxValue)");
+            // Negative cases
+            yield return new TestCaseData(new Fraction(-2)).Returns(-2.0m);
+            yield return new TestCaseData(new Fraction(2, -1, false)).Returns(-2.0m);
+            yield return new TestCaseData(new Fraction(-1, 2, false)).Returns(-0.5m);
+            yield return new TestCaseData(new Fraction(1, -2, false)).Returns(-0.5m);
+            yield return new TestCaseData(new Fraction(-1, 3, false)).Returns(-1.0m / 3.0m);
+            yield return new TestCaseData(new Fraction(1, -3, false)).Returns(-1.0m / 3.0m);
+            yield return new TestCaseData(new Fraction(-largeNumber, largeNumber, false)).Returns(-1.0m).SetName("-largeNumber / largeNumber");
+            yield return new TestCaseData(new Fraction(largeNumber, -largeNumber, false)).Returns(-1.0m).SetName("largeNumber / -largeNumber");
+            yield return new TestCaseData(new Fraction(-2 * largeNumber, largeNumber, false)).Returns(-2.0m).SetName("-2 * largeNumber / largeNumber");
+            yield return new TestCaseData(new Fraction(2 * largeNumber, -largeNumber, false)).Returns(-2.0m).SetName("2 * largeNumber / -largeNumber");
+            yield return new TestCaseData(new Fraction(-largeNumber, 2 * largeNumber, false)).Returns(-0.5m).SetName("-largeNumber / 2 * largeNumber");
+            yield return new TestCaseData(new Fraction(largeNumber, -2 * largeNumber, false)).Returns(-0.5m).SetName("largeNumber / -2 * largeNumber");
+            yield return new TestCaseData(new Fraction(-3 * largeNumber, 2 * largeNumber, false)).Returns(-1.5m).SetName("-3 * largeNumber / 2 * largeNumber");
+            yield return new TestCaseData(new Fraction(3 * largeNumber, -2 * largeNumber, false)).Returns(-1.5m).SetName("3 * largeNumber / -2 * largeNumber");
+            yield return new TestCaseData(new Fraction(-2 * largeNumber, 3 * largeNumber, false)).Returns(-2.0m / 3.0m).SetName("-2 * largeNumber / 3 * largeNumber");
+            yield return new TestCaseData(new Fraction(3 * largeNumber, -2 * largeNumber, false)).Returns(-3.0m / 2.0m).SetName("3 * largeNumber / -2 * largeNumber");
+            yield return new TestCaseData(Fraction.FromDecimal(decimal.MinValue)).Returns(decimal.MinValue).SetName("decimal.MaxValue");
+            yield return new TestCaseData(Fraction.FromDecimal(decimal.MinValue, false)).Returns(decimal.MinValue).SetName("decimal.MaxValue(reduce = false)");
+            yield return new TestCaseData(new Fraction(-largeNumber, BigInteger.One, false)).Returns(decimal.MinValue).SetName("-largeNumber / 1");
+            yield return new TestCaseData(new Fraction(largeNumber * largeNumber, -largeNumber, false)).Returns(decimal.MinValue).SetName("largeNumber^2 / -largeNumber");
+            yield return new TestCaseData(new Fraction(BigInteger.MinusOne, largeNumber, false)).Returns(0.0m).SetName("-1 / largeNumber");
+            yield return new TestCaseData(new Fraction(BigInteger.One, -largeNumber, false)).Returns(0.0m).SetName("1 / -largeNumber");
+            yield return new TestCaseData(new Fraction(-largeNumber, largeNumber * largeNumber, false)).Returns(0.0m).SetName("-largeNumber / largeNumber^2");
+            yield return new TestCaseData(new Fraction(largeNumber, -(largeNumber * largeNumber), false)).Returns(0.0m).SetName("largeNumber / -largeNumber^2");
+            yield return new TestCaseData(new Fraction(-40, largeNumber, false)).Returns(-20 / decimal.MaxValue).SetName("-40 / (2 * decimal.MaxValue)");
+            yield return new TestCaseData(new Fraction(40, -largeNumber, false)).Returns(-20 / decimal.MaxValue).SetName("40 / -(2 * decimal.MaxValue)");
+        }
+    }
+    
+    [Test]
+    [TestCaseSource(nameof(TestCases))]
+    public decimal Result_should_match_expected_value(Fraction fraction) {
+        return fraction.ToDecimalSaturating();
     }
 }
