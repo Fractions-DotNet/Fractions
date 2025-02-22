@@ -16,7 +16,7 @@ namespace Fractions;
 [DebuggerTypeProxy(typeof(FractionDebugView))]
 public readonly partial struct Fraction :
 #if NET
-    INumber<Fraction>
+    INumber<Fraction>, ISignedNumber<Fraction>
 #else
     IEquatable<Fraction>, IComparable, IComparable<Fraction>, IFormattable 
 #endif
@@ -159,6 +159,7 @@ public readonly partial struct Fraction :
 
 #if NET7_0_OR_GREATER
     static int INumberBase<Fraction>.Radix => 10;
+    static Fraction ISignedNumber<Fraction>.NegativeOne => MinusOne;
     static Fraction IAdditiveIdentity<Fraction, Fraction>.AdditiveIdentity => Zero;
     static Fraction IMultiplicativeIdentity<Fraction, Fraction>.MultiplicativeIdentity => One;
 
