@@ -197,7 +197,7 @@ public readonly partial struct Fraction :
     }
 
     static bool INumberBase<Fraction>.IsRealNumber(Fraction value) {
-        return true;
+        return !value.IsNaN;
     }
 
     static bool INumberBase<Fraction>.IsComplexNumber(Fraction value) {
