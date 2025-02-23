@@ -137,10 +137,6 @@ public readonly partial struct Fraction {
             // the resulting number would be in the range [-1,1] (exclusive)
             // we want to flip the operation: x = a/b -> 1/x = b/a
             var decimalPart = BigInteger.DivRem(denominator, numerator, out var remainder);
-            if (decimalPart < MIN_DECIMAL || decimalPart > MAX_DECIMAL) {
-                return decimal.Zero;
-            }
-
             return remainder.IsZero ? 1m / (decimal)decimalPart : 1m / ((decimal)decimalPart + (decimal)remainder / (decimal)numerator);
         }
 

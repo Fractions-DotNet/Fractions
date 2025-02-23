@@ -364,6 +364,20 @@ public class When_fraction_is_converted_to_decimal : Spec {
             .Should()
             .Throw<OverflowException>();
     }
+
+    [Test]
+    public void An_OverflowException_is_thrown_when_result_is_positive_and_smaller_than_One_over_MaxValue() {
+        Invoking(() => new Fraction(1, 2 * (BigInteger)decimal.MaxValue).ToDecimal())
+            .Should()
+            .Throw<OverflowException>();
+    }
+
+    [Test]
+    public void An_OverflowException_is_thrown_when_result_is_negative_and_larger_than_MinusOne_over_MaxValue() {
+        Invoking(() => new Fraction(-1, 2 * (BigInteger)decimal.MaxValue).ToDecimal())
+            .Should()
+            .Throw<OverflowException>();
+    }
 }
 
 [TestFixture]
