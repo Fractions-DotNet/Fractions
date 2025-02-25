@@ -1,18 +1,15 @@
 ﻿#if NET
 using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
-using Tests.Fractions;
 
 namespace Fractions.Tests.FractionSpecs.ToDataType;
 
 // these are tests for the methods from Fraction.ConvertTo-netcore.cs (called via the INumber interface)
 
 [TestFixture]
-public class When_a_finite_positive_fraction_is_converted_to_a_number : Spec {
+public class When_a_finite_positive_fraction_is_converted_to_a_number : NumberConversionSpec {
     [Test]
     public void CreateChecked_should_return_the_expected_value() {
         var fraction = new Fraction(3, 2);
@@ -35,6 +32,9 @@ public class When_a_finite_positive_fraction_is_converted_to_a_number : Spec {
         ushort.CreateChecked(fraction).Should().Be(1);
         byte.CreateChecked(fraction).Should().Be(1);
         sbyte.CreateChecked(fraction).Should().Be(1);
+        // although there isn't any char.CreateChecked(..) method, all numeric types support this conversion as well
+        CreateChecked<char, double>(97.9).Should().Be('a');
+        CreateChecked<char, Fraction>(new Fraction(979, 10)).Should().Be('a');
     }
 
     [Test]
@@ -57,8 +57,11 @@ public class When_a_finite_positive_fraction_is_converted_to_a_number : Spec {
         UIntPtr.CreateSaturating(fraction).Should().Be(1);
         short.CreateSaturating(fraction).Should().Be(1);
         ushort.CreateSaturating(fraction).Should().Be(1);
-        byte.CreateTruncating(fraction).Should().Be(1);
+        byte.CreateSaturating(fraction).Should().Be(1);
         sbyte.CreateSaturating(fraction).Should().Be(1);
+        // although there isn't any char.CreateChecked(..) method, all numeric types support this conversion as well
+        CreateSaturating<char, double>(97.9).Should().Be('a');
+        CreateSaturating<char, Fraction>(new Fraction(979, 10)).Should().Be('a');
     }
 
     [Test]
@@ -83,11 +86,14 @@ public class When_a_finite_positive_fraction_is_converted_to_a_number : Spec {
         ushort.CreateTruncating(fraction).Should().Be(1);
         byte.CreateTruncating(fraction).Should().Be(1);
         sbyte.CreateTruncating(fraction).Should().Be(1);
+        // although there isn't any char.CreateChecked(..) method, all numeric types support this conversion as well
+        CreateSaturating<char, double>(97.9).Should().Be('a');
+        CreateSaturating<char, Fraction>(new Fraction(979, 10)).Should().Be('a');
     }
 }
 
 [TestFixture]
-public class When_a_finite_negative_fraction_is_converted_to_a_number : Spec {
+public class When_a_finite_negative_fraction_is_converted_to_a_number : NumberConversionSpec {
     [Test]
     public void CreateChecked_should_return_the_expected_value() {
         var fraction = new Fraction(-3, 2);
@@ -110,6 +116,9 @@ public class When_a_finite_negative_fraction_is_converted_to_a_number : Spec {
         Invoking(() => ushort.CreateChecked(fraction)).Should().Throw<OverflowException>();
         Invoking(() => byte.CreateChecked(fraction)).Should().Throw<OverflowException>();
         sbyte.CreateChecked(fraction).Should().Be(-1);
+        // although there isn't any char.CreateChecked(..) method, all numeric types support this conversion as well
+        Invoking(() => CreateChecked<char, double>(-1.5)).Should().Throw<OverflowException>();
+        Invoking(() => CreateChecked<char, Fraction>(fraction)).Should().Throw<OverflowException>();
     }
 
     [Test]
@@ -134,6 +143,9 @@ public class When_a_finite_negative_fraction_is_converted_to_a_number : Spec {
         ushort.CreateSaturating(fraction).Should().Be(0);
         byte.CreateSaturating(fraction).Should().Be(0);
         sbyte.CreateSaturating(fraction).Should().Be(-1);
+        // although there isn't any char.CreateSaturating(..) method, all numeric types support this conversion as well
+        CreateSaturating<char, double>(-1.5).Should().Be(char.MinValue);
+        CreateSaturating<char, Fraction>(fraction).Should().Be(char.MinValue);
     }
 
     [Test]
@@ -147,22 +159,27 @@ public class When_a_finite_negative_fraction_is_converted_to_a_number : Spec {
         Half.CreateTruncating(fraction).Should().Be((Half)(-1.5));
         BigInteger.CreateTruncating(fraction).Should().Be(-1);
         Int128.CreateTruncating(fraction).Should().Be(-1);
-        UInt128.CreateTruncating(fraction).Should().Be(new UInt128(18446744073709551615, 18446744073709551615));
+        UInt128.CreateTruncating(fraction).Should().Be(UInt128.MaxValue);
         long.CreateTruncating(fraction).Should().Be(-1);
-        ulong.CreateTruncating(fraction).Should().Be(18446744073709551615UL);
+        ulong.CreateTruncating(fraction).Should().Be(ulong.MaxValue);
         int.CreateTruncating(fraction).Should().Be(-1);
-        uint.CreateTruncating(fraction).Should().Be(4294967295u);
+        uint.CreateTruncating(fraction).Should().Be(uint.MaxValue);
         nint.CreateTruncating(fraction).Should().Be(-1);
-        UIntPtr.CreateTruncating(fraction).Should().Be(new UIntPtr(18446744073709551615));
+        UIntPtr.CreateTruncating(fraction).Should().Be(UIntPtr.MaxValue);
         short.CreateTruncating(fraction).Should().Be(-1);
-        ushort.CreateTruncating(fraction).Should().Be(65535);
-        byte.CreateTruncating(fraction).Should().Be(255);
+        ushort.CreateTruncating(fraction).Should().Be(ushort.MaxValue);
+        byte.CreateTruncating(fraction).Should().Be(byte.MaxValue);
         sbyte.CreateTruncating(fraction).Should().Be(-1);
+        // although there isn't any char.CreateTruncating(..) method, all numeric types support this conversion as well
+        // note: for some reason the floating point types don't care implement an independent truncating method, instead they return the saturated result
+        CreateTruncating<char, double>(-1.5).Should().Be(char.MinValue);
+        CreateTruncating<char, int>(-1).Should().Be(char.MaxValue);
+        CreateTruncating<char, Fraction>(fraction).Should().Be(char.MaxValue);
     }
 }
 
 [TestFixture]
-public class When_converting_NaN_ToNumber : Spec {
+public class When_converting_NaN_to_a_number : NumberConversionSpec {
     [Test]
     public void CreateChecked_should_return_NaN_or_throw_an_exception() {
         double.CreateChecked(Fraction.NaN).Should().Be(double.NaN);
@@ -185,6 +202,9 @@ public class When_converting_NaN_ToNumber : Spec {
         Invoking(() => ushort.CreateChecked(Fraction.NaN)).Should().Throw<DivideByZeroException>();
         Invoking(() => byte.CreateChecked(Fraction.NaN)).Should().Throw<DivideByZeroException>();
         Invoking(() => sbyte.CreateChecked(Fraction.NaN)).Should().Throw<DivideByZeroException>();
+        // although there isn't any char.CreateChecked(..) method, all numeric types support this conversion as well
+        Invoking(() => CreateChecked<char, double>(double.NaN)).Should().Throw<OverflowException>();
+        Invoking(() => CreateChecked<char, Fraction>(Fraction.NaN)).Should().Throw<DivideByZeroException>();
     }
 
     [Test]
@@ -207,6 +227,10 @@ public class When_converting_NaN_ToNumber : Spec {
         ushort.CreateSaturating(Fraction.NaN).Should().Be(0);
         byte.CreateSaturating(Fraction.NaN).Should().Be(0);
         sbyte.CreateSaturating(Fraction.NaN).Should().Be(0);
+        sbyte.CreateSaturating(Fraction.NaN).Should().Be(0);
+        // although there isn't any char.CreateSaturating(..) method, all numeric types support this conversion as well
+        CreateSaturating<char, double>(double.NaN).Should().Be('\0');
+        CreateSaturating<char, Fraction>(Fraction.NaN).Should().Be('\0');
     }
 
     [Test]
@@ -229,11 +253,14 @@ public class When_converting_NaN_ToNumber : Spec {
         ushort.CreateTruncating(Fraction.NaN).Should().Be(0);
         byte.CreateTruncating(Fraction.NaN).Should().Be(0);
         sbyte.CreateTruncating(Fraction.NaN).Should().Be(0);
+        // although there isn't any char.CreateTruncating(..) method, all numeric types support this conversion as well
+        CreateTruncating<char, double>(double.NaN).Should().Be('\0');
+        CreateTruncating<char, Fraction>(Fraction.NaN).Should().Be('\0');
     }
 }
 
 [TestFixture]
-public class When_converting_PositiveInfinity_ToNumber : Spec {
+public class When_converting_PositiveInfinity_to_a_number : NumberConversionSpec {
     [Test]
     public void CreateChecked_should_return_PositiveInfinity_or_throw_a_DivideByZeroException() {
         double.CreateChecked(Fraction.PositiveInfinity).Should().Be(double.PositiveInfinity);
@@ -256,6 +283,9 @@ public class When_converting_PositiveInfinity_ToNumber : Spec {
         Invoking(() => ushort.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<DivideByZeroException>();
         Invoking(() => byte.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<DivideByZeroException>();
         Invoking(() => sbyte.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<DivideByZeroException>();
+        // although there isn't any char.CreateChecked(..) method, all numeric types support this conversion as well
+        Invoking(() => CreateChecked<char, double>(double.PositiveInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => CreateChecked<char, Fraction>(Fraction.PositiveInfinity)).Should().Throw<DivideByZeroException>();
     }
 
     [Test]
@@ -282,6 +312,9 @@ public class When_converting_PositiveInfinity_ToNumber : Spec {
         ushort.CreateSaturating(Fraction.PositiveInfinity).Should().Be(ushort.MaxValue);
         byte.CreateSaturating(Fraction.PositiveInfinity).Should().Be(byte.MaxValue);
         sbyte.CreateSaturating(Fraction.PositiveInfinity).Should().Be(sbyte.MaxValue);
+        // although there isn't any char.CreateSaturating(..) method, all numeric types support this conversion as well
+        CreateSaturating<char, double>(double.PositiveInfinity).Should().Be(char.MaxValue);
+        CreateSaturating<char, Fraction>(Fraction.PositiveInfinity).Should().Be(char.MaxValue);
     }
 
     [Test]
@@ -308,11 +341,14 @@ public class When_converting_PositiveInfinity_ToNumber : Spec {
         ushort.CreateTruncating(Fraction.PositiveInfinity).Should().Be(ushort.MaxValue);
         byte.CreateTruncating(Fraction.PositiveInfinity).Should().Be(byte.MaxValue);
         sbyte.CreateTruncating(Fraction.PositiveInfinity).Should().Be(sbyte.MaxValue);
+        // although there isn't any char.CreateTruncating(..) method, all numeric types support this conversion as well
+        CreateTruncating<char, double>(double.PositiveInfinity).Should().Be(char.MaxValue);
+        CreateTruncating<char, Fraction>(Fraction.PositiveInfinity).Should().Be(char.MaxValue);
     }
 }
 
 [TestFixture]
-public class When_converting_NegativeInfinity_ToNumber : Spec {
+public class When_converting_NegativeInfinity_to_a_number : NumberConversionSpec {
     [Test]
     public void CreateChecked_should_return_NegativeInfinity_or_throw_a_DivideByZeroException() {
         double.CreateChecked(Fraction.NegativeInfinity).Should().Be(double.NegativeInfinity);
@@ -335,6 +371,9 @@ public class When_converting_NegativeInfinity_ToNumber : Spec {
         Invoking(() => ushort.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<DivideByZeroException>();
         Invoking(() => byte.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<DivideByZeroException>();
         Invoking(() => sbyte.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<DivideByZeroException>();
+        // although there isn't any char.CreateChecked(..) method, all numeric types support this conversion as well
+        Invoking(() => CreateChecked<char, double>(double.NegativeInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => CreateChecked<char, Fraction>(Fraction.NegativeInfinity)).Should().Throw<DivideByZeroException>();
     }
 
     [Test]
@@ -361,6 +400,9 @@ public class When_converting_NegativeInfinity_ToNumber : Spec {
         ushort.CreateSaturating(Fraction.NegativeInfinity).Should().Be(ushort.MinValue);
         byte.CreateSaturating(Fraction.NegativeInfinity).Should().Be(byte.MinValue);
         sbyte.CreateSaturating(Fraction.NegativeInfinity).Should().Be(sbyte.MinValue);
+        // although there isn't any char.CreateSaturating(..) method, all numeric types support this conversion as well
+        CreateSaturating<char, double>(double.NegativeInfinity).Should().Be(char.MinValue);
+        CreateSaturating<char, Fraction>(Fraction.NegativeInfinity).Should().Be(char.MinValue);
     }
 
     [Test]
@@ -387,268 +429,28 @@ public class When_converting_NegativeInfinity_ToNumber : Spec {
         ushort.CreateTruncating(Fraction.NegativeInfinity).Should().Be(ushort.MinValue);
         byte.CreateTruncating(Fraction.NegativeInfinity).Should().Be(byte.MinValue);
         sbyte.CreateTruncating(Fraction.NegativeInfinity).Should().Be(sbyte.MinValue);
+        // although there isn't any char.CreateTruncating(..) method, all numeric types support this conversion as well
+        CreateTruncating<char, double>(double.NegativeInfinity).Should().Be(char.MinValue);
+        CreateTruncating<char, Fraction>(Fraction.NegativeInfinity).Should().Be(char.MinValue);
     }
 }
 
 [TestFixture]
-public class When_trying_to_convert_to_an_unsupported_type {
+public class When_converting_to_an_unsupported_type : NumberConversionSpec {
     [Test]
-    public void TryConvertToChecked_should_return_false() {
-        FakeNumber.TryConvertToFakeNumberChecked(Fraction.Zero, out var result).Should().BeFalse();
-        result.Should().BeNull();
-    }
-
-    [Test]
-    public void TryConvertToSaturating_should_return_false() {
-        FakeNumber.TryConvertToFakeNumberSaturating(Fraction.Zero, out var result).Should().BeFalse();
-        result.Should().BeNull();
+    public void CreateChecked_should_throw_NotSupportedException() {
+        Assert.Throws<NotSupportedException>(() => CreateChecked<FakeNumber, Fraction>(Fraction.One));
     }
 
     [Test]
-    public void TryConvertToTruncating_should_return_false() {
-        FakeNumber.TryConvertToFakeNumberTruncating(Fraction.Zero, out var result).Should().BeFalse();
-        result.Should().BeNull();
+    public void CreateSaturating_should_throw_NotSupportedException() {
+        Assert.Throws<NotSupportedException>(() => CreateSaturating<FakeNumber, Fraction>(Fraction.One));
     }
 
-    /// <summary>
-    ///     Represents a fake number implementation for testing purposes.
-    /// </summary>
-    /// <remarks>
-    ///     This class is used internally within the test suite to simulate a number type that implements the
-    ///     <see cref="System.Numerics.INumberBase{T}" /> interface.
-    ///     It provides functionality to test conversions and operations involving custom number types.
-    /// </remarks>
-#pragma warning disable CA1067, CS0660, CS8632
-    private class FakeNumber : INumberBase<FakeNumber> {
-        public static bool TryConvertToFakeNumberChecked<TOther>(TOther value, out FakeNumber? result) where TOther : INumberBase<TOther> {
-            // normally this would be called from a public CreateChecked method, where the type would first try a TryConvertFromChecked before calling TOther
-            // when the result is false, a NotSupportedException is typically thrown (see decimal.CreateChecked(..))
-            return TOther.TryConvertToChecked(value, out result);
-        }
-
-        public static bool TryConvertToFakeNumberSaturating<TOther>(TOther value, out FakeNumber? result) where TOther : INumberBase<TOther> {
-            // normally this would be called from a public CreateSaturating method, where the type would first try a TryConvertFromSaturating before calling TOther
-            // when the result is false, a NotSupportedException is typically thrown (see decimal.CreateSaturating(..))
-            return TOther.TryConvertToSaturating(value, out result);
-        }
-
-        public static bool TryConvertToFakeNumberTruncating<TOther>(TOther value, out FakeNumber? result) where TOther : INumberBase<TOther> {
-            // normally this would be called from a public CreateTruncating method, where the type would first try a TryConvertFromTruncating before calling TOther
-            // when the result is false, a NotSupportedException is typically thrown (see decimal.CreateTruncating(..))
-            return TOther.TryConvertToTruncating(value, out result);
-        }
-
-        #region Other interface members (not implemented)
-
-        static bool INumberBase<FakeNumber>.TryConvertFromChecked<TOther>(TOther value, [MaybeNullWhen(false)] out FakeNumber result) {
-            throw new NotImplementedException();
-        }
-
-        static bool INumberBase<FakeNumber>.TryConvertFromSaturating<TOther>(TOther value, [MaybeNullWhen(false)] out FakeNumber result) {
-            throw new NotImplementedException();
-        }
-
-        static bool INumberBase<FakeNumber>.TryConvertFromTruncating<TOther>(TOther value, [MaybeNullWhen(false)] out FakeNumber result) {
-            throw new NotImplementedException();
-        }
-
-        bool IEquatable<FakeNumber>.Equals(FakeNumber? other) {
-            throw new NotImplementedException();
-        }
-
-        string IFormattable.ToString(string? format, IFormatProvider? formatProvider) {
-            throw new NotImplementedException();
-        }
-
-        bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) {
-            throw new NotImplementedException();
-        }
-
-        static FakeNumber IParsable<FakeNumber>.Parse(string s, IFormatProvider? provider) {
-            throw new NotImplementedException();
-        }
-
-        static bool IParsable<FakeNumber>.TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, [MaybeNullWhen(false)] out FakeNumber result) {
-            throw new NotImplementedException();
-        }
-
-        static FakeNumber ISpanParsable<FakeNumber>.Parse(ReadOnlySpan<char> s, IFormatProvider? provider) {
-            throw new NotImplementedException();
-        }
-
-        static bool ISpanParsable<FakeNumber>.TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, [MaybeNullWhen(false)] out FakeNumber result) {
-            throw new NotImplementedException();
-        }
-
-
-        static FakeNumber IAdditionOperators<FakeNumber, FakeNumber, FakeNumber>.operator +(FakeNumber left, FakeNumber right) {
-            throw new NotImplementedException();
-        }
-
-        static FakeNumber IAdditiveIdentity<FakeNumber, FakeNumber>.AdditiveIdentity { get; } = new();
-
-        static FakeNumber IDecrementOperators<FakeNumber>.operator --(FakeNumber value) {
-            throw new NotImplementedException();
-        }
-
-        static FakeNumber IDivisionOperators<FakeNumber, FakeNumber, FakeNumber>.operator /(FakeNumber left, FakeNumber right) {
-            throw new NotImplementedException();
-        }
-
-        static bool IEqualityOperators<FakeNumber, FakeNumber, bool>.operator ==(FakeNumber? left, FakeNumber? right) {
-            throw new NotImplementedException();
-        }
-
-        static bool IEqualityOperators<FakeNumber, FakeNumber, bool>.operator !=(FakeNumber? left, FakeNumber? right) {
-            throw new NotImplementedException();
-        }
-
-        static FakeNumber IIncrementOperators<FakeNumber>.operator ++(FakeNumber value) {
-            throw new NotImplementedException();
-        }
-
-        static FakeNumber IMultiplicativeIdentity<FakeNumber, FakeNumber>.MultiplicativeIdentity { get; } = new();
-
-        static FakeNumber IMultiplyOperators<FakeNumber, FakeNumber, FakeNumber>.operator *(FakeNumber left, FakeNumber right) {
-            throw new NotImplementedException();
-        }
-
-        static FakeNumber ISubtractionOperators<FakeNumber, FakeNumber, FakeNumber>.operator -(FakeNumber left, FakeNumber right) {
-            throw new NotImplementedException();
-        }
-
-        static FakeNumber IUnaryNegationOperators<FakeNumber, FakeNumber>.operator -(FakeNumber value) {
-            throw new NotImplementedException();
-        }
-
-        static FakeNumber IUnaryPlusOperators<FakeNumber, FakeNumber>.operator +(FakeNumber value) {
-            throw new NotImplementedException();
-        }
-
-        static FakeNumber INumberBase<FakeNumber>.Abs(FakeNumber value) {
-            throw new NotImplementedException();
-        }
-
-        static bool INumberBase<FakeNumber>.IsCanonical(FakeNumber value) {
-            throw new NotImplementedException();
-        }
-
-        static bool INumberBase<FakeNumber>.IsComplexNumber(FakeNumber value) {
-            throw new NotImplementedException();
-        }
-
-        static bool INumberBase<FakeNumber>.IsEvenInteger(FakeNumber value) {
-            throw new NotImplementedException();
-        }
-
-        static bool INumberBase<FakeNumber>.IsFinite(FakeNumber value) {
-            throw new NotImplementedException();
-        }
-
-        static bool INumberBase<FakeNumber>.IsImaginaryNumber(FakeNumber value) {
-            throw new NotImplementedException();
-        }
-
-        static bool INumberBase<FakeNumber>.IsInfinity(FakeNumber value) {
-            throw new NotImplementedException();
-        }
-
-        static bool INumberBase<FakeNumber>.IsInteger(FakeNumber value) {
-            throw new NotImplementedException();
-        }
-
-        static bool INumberBase<FakeNumber>.IsNaN(FakeNumber value) {
-            throw new NotImplementedException();
-        }
-
-        static bool INumberBase<FakeNumber>.IsNegative(FakeNumber value) {
-            throw new NotImplementedException();
-        }
-
-        static bool INumberBase<FakeNumber>.IsNegativeInfinity(FakeNumber value) {
-            throw new NotImplementedException();
-        }
-
-        static bool INumberBase<FakeNumber>.IsNormal(FakeNumber value) {
-            throw new NotImplementedException();
-        }
-
-        static bool INumberBase<FakeNumber>.IsOddInteger(FakeNumber value) {
-            throw new NotImplementedException();
-        }
-
-        static bool INumberBase<FakeNumber>.IsPositive(FakeNumber value) {
-            throw new NotImplementedException();
-        }
-
-        static bool INumberBase<FakeNumber>.IsPositiveInfinity(FakeNumber value) {
-            throw new NotImplementedException();
-        }
-
-        static bool INumberBase<FakeNumber>.IsRealNumber(FakeNumber value) {
-            throw new NotImplementedException();
-        }
-
-        static bool INumberBase<FakeNumber>.IsSubnormal(FakeNumber value) {
-            throw new NotImplementedException();
-        }
-
-        static bool INumberBase<FakeNumber>.IsZero(FakeNumber value) {
-            throw new NotImplementedException();
-        }
-
-        static FakeNumber INumberBase<FakeNumber>.MaxMagnitude(FakeNumber x, FakeNumber y) {
-            throw new NotImplementedException();
-        }
-
-        static FakeNumber INumberBase<FakeNumber>.MaxMagnitudeNumber(FakeNumber x, FakeNumber y) {
-            throw new NotImplementedException();
-        }
-
-        static FakeNumber INumberBase<FakeNumber>.MinMagnitude(FakeNumber x, FakeNumber y) {
-            throw new NotImplementedException();
-        }
-
-        static FakeNumber INumberBase<FakeNumber>.MinMagnitudeNumber(FakeNumber x, FakeNumber y) {
-            throw new NotImplementedException();
-        }
-
-        static FakeNumber INumberBase<FakeNumber>.Parse(ReadOnlySpan<char> s, NumberStyles style, IFormatProvider? provider) {
-            throw new NotImplementedException();
-        }
-
-        static FakeNumber INumberBase<FakeNumber>.Parse(string s, NumberStyles style, IFormatProvider? provider) {
-            throw new NotImplementedException();
-        }
-
-        static bool INumberBase<FakeNumber>.TryConvertToChecked<TOther>(FakeNumber value, [MaybeNullWhen(false)] out TOther result) {
-            throw new NotImplementedException();
-        }
-
-        static bool INumberBase<FakeNumber>.TryConvertToSaturating<TOther>(FakeNumber value, [MaybeNullWhen(false)] out TOther result) {
-            throw new NotImplementedException();
-        }
-
-        static bool INumberBase<FakeNumber>.TryConvertToTruncating<TOther>(FakeNumber value, [MaybeNullWhen(false)] out TOther result) {
-            throw new NotImplementedException();
-        }
-
-        static bool INumberBase<FakeNumber>.TryParse(ReadOnlySpan<char> s, NumberStyles style, IFormatProvider? provider, [MaybeNullWhen(false)] out FakeNumber result) {
-            throw new NotImplementedException();
-        }
-
-        static bool INumberBase<FakeNumber>.TryParse([NotNullWhen(true)] string? s, NumberStyles style, IFormatProvider? provider, [MaybeNullWhen(false)] out FakeNumber result) {
-            throw new NotImplementedException();
-        }
-
-        static FakeNumber INumberBase<FakeNumber>.One { get; } = new();
-        static int INumberBase<FakeNumber>.Radix { get; } = 10;
-        static FakeNumber INumberBase<FakeNumber>.Zero { get; } = new();
-
-        #endregion
+    [Test]
+    public void CreateTruncating_should_throw_NotSupportedException() {
+        Assert.Throws<NotSupportedException>(() => CreateTruncating<FakeNumber, Fraction>(Fraction.One));
     }
-#pragma warning restore CS0660, CA1067, CS8632
 }
-
 
 #endif

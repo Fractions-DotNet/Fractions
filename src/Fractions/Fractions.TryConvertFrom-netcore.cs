@@ -8,17 +8,50 @@ namespace Fractions;
 public partial struct Fraction {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static bool INumberBase<Fraction>.TryConvertFromChecked<TOther>(TOther value, out Fraction result) {
-        return TryConvertFrom(value, out result);
+        if (TryConvertFrom(value, out result)) {
+            return true;
+        }
+
+        if (typeof(TOther) == typeof(Complex)) {
+            // Complex numbers with an imaginary part can't be represented as a "real number"
+            // so we will convert it to NaN for the floating-point types,
+            // since that's what Sqrt(-1) (which is `new Complex(0, 1)`) results in.
+            result = FromDouble(double.CreateChecked(value));
+            return true;
+        }
+
+        result = default;
+        return false;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static bool INumberBase<Fraction>.TryConvertFromSaturating<TOther>(TOther value, out Fraction result) {
-        return TryConvertFrom(value, out result);
+        if (TryConvertFrom(value, out result)) {
+            return true;
+        }
+
+        if (typeof(TOther) == typeof(Complex)) {
+            result = FromDouble(double.CreateSaturating(value));
+            return true;
+        }
+
+        result = default;
+        return false;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static bool INumberBase<Fraction>.TryConvertFromTruncating<TOther>(TOther value, out Fraction result) {
-        return TryConvertFrom(value, out result);
+        if (TryConvertFrom(value, out result)) {
+            return true;
+        }
+
+        if (typeof(TOther) == typeof(Complex)) {
+            result = FromDouble(double.CreateTruncating(value));
+            return true;
+        }
+
+        result = default;
+        return false;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

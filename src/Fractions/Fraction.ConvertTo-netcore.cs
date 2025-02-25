@@ -145,6 +145,12 @@ public partial struct Fraction {
             return true;
         }
 
+        if (typeof(TOther) == typeof(char)) {
+            var convertedValue = (char)(BigInteger)value;
+            result = (TOther)(object)convertedValue;
+            return true;
+        }
+
         if (typeof(TOther) == typeof(byte)) {
             var convertedValue = (byte)(BigInteger)value;
             result = (TOther)(object)convertedValue;
@@ -244,7 +250,11 @@ public partial struct Fraction {
         if (typeof(TOther) == typeof(ushort)) {
             return convertFromBigInteger<ushort>(value, out result);
         }
-
+        
+        if (typeof(TOther) == typeof(char)) {
+            return convertFromBigInteger<char>(value, out result);
+        }
+        
         if (typeof(TOther) == typeof(byte)) {
             return convertFromBigInteger<byte>(value, out result);
         }
@@ -352,7 +362,11 @@ public partial struct Fraction {
         if (typeof(TOther) == typeof(ushort)) {
             return convertFromBigInteger<ushort>(value, out result);
         }
-
+        
+        if (typeof(TOther) == typeof(char)) {
+            return convertFromBigInteger<char>(value, out result);
+        }
+        
         if (typeof(TOther) == typeof(byte)) {
             return convertFromBigInteger<byte>(value, out result);
         }
