@@ -554,7 +554,6 @@ public readonly partial struct Fraction {
             denominator: BigInteger.Pow(fraction.Denominator, exponent));
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static BigInteger PowerOfTen(int exponent) {
         if (exponent < PowersOfTen.Length) {
             return PowersOfTen[exponent];
