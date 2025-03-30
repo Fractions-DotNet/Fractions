@@ -5,8 +5,8 @@ namespace Fractions.Benchmarks;
 [MemoryDiagnoser]
 [ShortRunJob]
 public class RoundingBenchmarks {
-
-    [Params(1, 2, 4, 8, 16)]
+    
+    [Params(1, 2, 4, 8, 16, 32, 64)]
     public int NbDecimals { get; set; }
     
     [Params(MidpointRounding.AwayFromZero)]
@@ -41,7 +41,7 @@ public class RoundingBenchmarks {
 [ShortRunJob]
 public class RoundingWithoutReductionBenchmarks {
 
-    [Params(1, 2, 4, 8, 16)]
+    [Params(1, 2, 4, 8, 16, 32, 64)]
     public int NbDecimals { get; set; }
     
     [Params(MidpointRounding.AwayFromZero)]
