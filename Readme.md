@@ -396,9 +396,7 @@ For more detailed information about these benchmarks and how to interpret them, 
 
 ## Build from source
 
-[![Build status](https://ci.appveyor.com/api/projects/status/22acgj4m7pt5wr8d?svg=true)](https://ci.appveyor.com/project/danm-de/fractions)
-
-Just run `dotnet build -c release`.
+Just run `dotnet build -c Release`.
 
 ### Required software frameworks
 
