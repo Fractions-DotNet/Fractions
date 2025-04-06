@@ -118,7 +118,9 @@ public readonly partial struct Fraction {
 
     /// <inheritdoc />
     public static Fraction Parse(ReadOnlySpan<char> s, NumberStyles style, IFormatProvider? provider) {
-        return TryParse(s, style, provider, out var fraction) ? fraction : throw new FormatException(string.Format(Resources.CannotConvertToFraction, s.ToString()));
+        return TryParse(s, style, provider, out var fraction)
+            ? fraction
+            : throw new FormatException(string.Format(Resources.CannotConvertToFraction, s.ToString()));
     }
 
     /// <summary>
