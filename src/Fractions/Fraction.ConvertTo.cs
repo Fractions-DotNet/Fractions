@@ -105,7 +105,7 @@ public readonly partial struct Fraction {
         if (numerator > MAX_DECIMAL) {
             if (denominator > MAX_DECIMAL) {
                 // both terms need to be rounded
-                numerator = (numerator * MAX_DECIMAL / denominator);
+                numerator = numerator * MAX_DECIMAL / denominator;
                 denominator = MAX_DECIMAL;
                 if (numerator <= MAX_DECIMAL) {
                     // both terms are now within range
@@ -113,14 +113,16 @@ public readonly partial struct Fraction {
                 }
             }
 
-            var withoutDecimalPlaces = (decimal) BigInteger.DivRem(numerator, denominator, out var remainder);
-            return remainder.IsZero ? withoutDecimalPlaces : withoutDecimalPlaces + (decimal)remainder / (decimal)denominator;
+            var withoutDecimalPlaces = (decimal)BigInteger.DivRem(numerator, denominator, out var remainder);
+            return remainder.IsZero
+                ? withoutDecimalPlaces
+                : withoutDecimalPlaces + (decimal)remainder / (decimal)denominator;
         }
 
         if (numerator < MIN_DECIMAL) {
             if (denominator > MAX_DECIMAL) {
                 // both terms need to be rounded
-                numerator = (numerator * MAX_DECIMAL / denominator);
+                numerator = numerator * MAX_DECIMAL / denominator;
                 denominator = MAX_DECIMAL;
                 if (numerator >= MIN_DECIMAL) {
                     // both terms are now within range
@@ -129,7 +131,9 @@ public readonly partial struct Fraction {
             }
 
             var withoutDecimalPlaces = (decimal)BigInteger.DivRem(numerator, denominator, out var remainder);
-            return remainder.IsZero ? withoutDecimalPlaces : withoutDecimalPlaces + (decimal)remainder / (decimal)denominator;
+            return remainder.IsZero
+                ? withoutDecimalPlaces
+                : withoutDecimalPlaces + (decimal)remainder / (decimal)denominator;
         }
 
         if (denominator > MAX_DECIMAL) {
@@ -137,7 +141,9 @@ public readonly partial struct Fraction {
             // the resulting number would be in the range [-1,1] (exclusive)
             // we want to flip the operation: x = a/b -> 1/x = b/a
             var decimalPart = BigInteger.DivRem(denominator, numerator, out var remainder);
-            return remainder.IsZero ? 1m / (decimal)decimalPart : 1m / ((decimal)decimalPart + (decimal)remainder / (decimal)numerator);
+            return remainder.IsZero
+                ? 1m / (decimal)decimalPart
+                : 1m / ((decimal)decimalPart + (decimal)remainder / (decimal)numerator);
         }
 
         return (decimal)numerator / (decimal)denominator;
@@ -203,7 +209,9 @@ public readonly partial struct Fraction {
                 return decimal.MaxValue;
             }
 
-            return remainder.IsZero ? (decimal)withoutDecimalPlaces : (decimal)withoutDecimalPlaces + (decimal)remainder / (decimal)denominator;
+            return remainder.IsZero
+                ? (decimal)withoutDecimalPlaces
+                : (decimal)withoutDecimalPlaces + (decimal)remainder / (decimal)denominator;
         }
 
         if (numerator < MIN_DECIMAL) {
@@ -222,7 +230,9 @@ public readonly partial struct Fraction {
                 return decimal.MinValue;
             }
 
-            return remainder.IsZero ? (decimal)withoutDecimalPlaces : (decimal)withoutDecimalPlaces + (decimal)remainder / (decimal)denominator;
+            return remainder.IsZero
+                ? (decimal)withoutDecimalPlaces
+                : (decimal)withoutDecimalPlaces + (decimal)remainder / (decimal)denominator;
         }
 
         if (denominator > MAX_DECIMAL) {
@@ -234,7 +244,9 @@ public readonly partial struct Fraction {
                 return decimal.Zero;
             }
 
-            return remainder.IsZero ? 1m / (decimal)decimalPart : 1m / ((decimal)decimalPart + (decimal)remainder / (decimal)numerator);
+            return remainder.IsZero
+                ? 1m / (decimal)decimalPart
+                : 1m / ((decimal)decimalPart + (decimal)remainder / (decimal)numerator);
         }
 
         return (decimal)numerator / (decimal)denominator;
@@ -273,7 +285,7 @@ public readonly partial struct Fraction {
         if (numerator.IsZero) {
             return 0;
         }
-        
+
         if (denominator.IsOne) {
             return (double)numerator;
         }
@@ -295,7 +307,9 @@ public readonly partial struct Fraction {
                 return double.PositiveInfinity;
             }
 
-            return remainder.IsZero ? withoutDecimalPlaces : withoutDecimalPlaces + (double)remainder / (double)denominator;
+            return remainder.IsZero
+                ? withoutDecimalPlaces
+                : withoutDecimalPlaces + (double)remainder / (double)denominator;
         }
 
         if (double.IsNegativeInfinity(convertedNumerator)) {
@@ -314,22 +328,26 @@ public readonly partial struct Fraction {
                 return double.NegativeInfinity;
             }
 
-            return remainder.IsZero ? withoutDecimalPlaces : withoutDecimalPlaces + (double)remainder / (double)denominator;
+            return remainder.IsZero
+                ? withoutDecimalPlaces
+                : withoutDecimalPlaces + (double)remainder / (double)denominator;
         }
-        
+
         var convertedDenominator = (double)denominator;
         if (double.IsPositiveInfinity(convertedDenominator)) {
             // since both terms are non-zero and the numerator is smaller (in magnitude) to the denominator
             // the resulting number would be in the range [-1,1] (exclusive)
             // we want to flip the operation: x = a/b -> 1/x = b/a
-            var decimalPart = (double) BigInteger.DivRem(denominator, numerator, out var remainder);
+            var decimalPart = (double)BigInteger.DivRem(denominator, numerator, out var remainder);
             if (double.IsInfinity(decimalPart)) {
                 return 0;
             }
 
-            return remainder.IsZero ? 1 / decimalPart : 1 / (decimalPart + (double)remainder / (double)numerator);
+            return remainder.IsZero
+                ? 1 / decimalPart
+                : 1 / (decimalPart + (double)remainder / (double)numerator);
         }
-        
+
         return convertedNumerator / convertedDenominator;
     }
 }
