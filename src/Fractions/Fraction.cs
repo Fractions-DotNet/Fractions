@@ -157,7 +157,7 @@ public readonly partial struct Fraction :
 
     #region INumber definitions
 
-#if NET7_0_OR_GREATER
+#if NET
     static int INumberBase<Fraction>.Radix => 10;
     static Fraction ISignedNumber<Fraction>.NegativeOne => MinusOne;
     static Fraction IAdditiveIdentity<Fraction, Fraction>.AdditiveIdentity => Zero;
