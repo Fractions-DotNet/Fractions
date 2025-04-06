@@ -1,5 +1,11 @@
 ﻿# Changelog
 
+## 8.3.2
+- PR [Optimizing the PowerOfTen function for exponents in the range 18-54](https://github.com/danm-de/Fractions/pull/110) by [lipchev](https://github.com/lipchev)
+- PR [FromDecimal: replaced the usage of BigInteger.Pow(TEN, exponent)](https://github.com/danm-de/Fractions/pull/109) by [lipchev](https://github.com/lipchev)
+- PR [FromDoubleRounded: replaced the usages of BigInteger.Pow(TEN, exponent)](https://github.com/danm-de/Fractions/pull/108) by [lipchev](https://github.com/lipchev)
+- PR [FromDecimal: replaced the usage of BigInteger.Pow(TEN, exponent)](https://github.com/danm-de/Fractions/pull/109) by [lipchev](https://github.com/lipchev)
+
 ## 8.3.1
 - Fixed [#105](https://github.com/danm-de/Fractions/issues/105): ArgumentOutOfRangeException thrown from the TryParse method by [lipchev](https://github.com/lipchev)
 - Fixed [#102](https://github.com/danm-de/Fractions/issues/102): DecimalNotationFormatter with "G2" returns "2.0" by [lipchev](https://github.com/lipchev)

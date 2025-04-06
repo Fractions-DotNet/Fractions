@@ -554,11 +554,30 @@ public readonly partial struct Fraction {
             denominator: BigInteger.Pow(fraction.Denominator, exponent));
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static BigInteger PowerOfTen(int exponent) =>
-        exponent < PowersOfTen.Length
-            ? PowersOfTen[exponent]
-            : BigInteger.Pow(TEN, exponent);
+    internal static BigInteger PowerOfTen(int exponent) {
+        if (exponent < PowersOfTen.Length) {
+            return PowersOfTen[exponent];
+        }
+
+        var maxExponent = PowersOfTen.Length - 1;
+        if (exponent > 3 * maxExponent) {
+            return BigInteger.Pow(TEN, exponent); // the exponent is > 54
+        }
+
+        var maxPowerOfTen = PowersOfTen[maxExponent];
+        var result = maxPowerOfTen;
+        exponent -= maxExponent; // the exponent no more than 2 * maxExponent (36)
+        if (exponent > maxExponent) {
+            result *= maxPowerOfTen;
+            exponent -= maxExponent; // the exponent is no more than maxExponent (18)
+        }
+
+        if (exponent == maxExponent) {
+            return result * maxPowerOfTen;
+        }
+
+        return result * PowersOfTen[exponent];
+    }
 
     /// <summary>
     /// Returns a fraction with the numerator and denominator exchanged.

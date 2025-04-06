@@ -774,7 +774,7 @@ public readonly partial struct Fraction {
 
         // 4. construct the fractional part using the corresponding decimal power for the denominator
         var nbDecimals = fractionalSpan.Length;
-        var denominator = BigInteger.Pow(TEN, nbDecimals);
+        var denominator = PowerOfTen(nbDecimals);
         fraction = reduceTerms ? ReduceSigned(numerator, denominator) : new Fraction(true, numerator, denominator);
         return true;
     }
@@ -1282,7 +1282,7 @@ public readonly partial struct Fraction {
         }
 
         // 4. construct the fractional part using the corresponding decimal power for the denominator
-        var denominator = BigInteger.Pow(TEN, nbDecimals);
+        var denominator = PowerOfTen(nbDecimals);
         fraction = reduceTerms ? ReduceSigned(numerator, denominator) : new Fraction(true, numerator, denominator);
         return true;
     }

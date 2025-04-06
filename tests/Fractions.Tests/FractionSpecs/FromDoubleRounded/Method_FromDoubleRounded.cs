@@ -371,3 +371,27 @@ public class When_a_fractions_is_created_by_rounding_a_double_with_less_than_the
         return Fraction.FromDoubleRounded(value, significantDigits);
     }
 }
+
+[TestFixture]
+public class When_a_fraction_is_created_by_rounding_NaN_with_any_number_of_significant_digits {
+    [Test]
+    public void The_result_should_be_NaN() {
+        Fraction.FromDoubleRounded(double.NaN, 15).IsNaN.Should().BeTrue();
+    }
+}
+
+[TestFixture]
+public class When_a_fraction_is_created_by_rounding_PositiveInfinity_with_any_number_of_significant_digits {
+    [Test]
+    public void The_result_should_be_PositiveInfinity() {
+        Fraction.FromDoubleRounded(double.PositiveInfinity, 15).IsPositiveInfinity.Should().BeTrue();
+    }
+}
+
+[TestFixture]
+public class When_a_fraction_is_created_by_rounding_NegativeInfinity_with_any_number_of_significant_digits {
+    [Test]
+    public void The_result_should_be_NegativeInfinity() {
+        Fraction.FromDoubleRounded(double.NegativeInfinity, 15).IsNegativeInfinity.Should().BeTrue();
+    }
+}

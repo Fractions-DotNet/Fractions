@@ -315,7 +315,7 @@ public readonly partial struct Fraction {
         var magnitude = Math.Floor(Math.Log10(Math.Abs(value)));
         if (magnitude > significantDigits) {
             var digitsToKeep = new BigInteger(value / Math.Pow(10, magnitude - significantDigits));
-            return digitsToKeep * BigInteger.Pow(TEN, (int)magnitude - significantDigits);
+            return digitsToKeep * PowerOfTen((int)magnitude - significantDigits);
         }
 
         // "decimal" values
@@ -337,7 +337,7 @@ public readonly partial struct Fraction {
             decimalPlaces--;
         }
 
-        var denominator = BigInteger.Pow(TEN, decimalPlaces);
+        var denominator = PowerOfTen(decimalPlaces);
         var numerator = integerPart.IsZero? fractionalPart : integerPart * denominator + fractionalPart;
         return reduceTerms ? ReduceSigned(numerator, denominator) : new Fraction(true, numerator, denominator);
     }

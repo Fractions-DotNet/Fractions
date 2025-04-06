@@ -72,7 +72,7 @@ public readonly partial struct Fraction {
             numerator = -numerator;
         }
 
-        var denominator = BigInteger.Pow(TEN, exp);
+        var denominator = PowerOfTen(exp);
 
         return reduceTerms ? ReduceSigned(numerator, denominator) : new Fraction(true, numerator, denominator);
     }
