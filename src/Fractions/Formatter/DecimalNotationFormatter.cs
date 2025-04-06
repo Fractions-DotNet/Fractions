@@ -258,8 +258,7 @@ public class DecimalNotationFormatter : ICustomFormatter {
     ///     The precision specifier indicates the desired number of decimal places. If the precision specifier is omitted, the
     ///     current <see cref="NumberFormatInfo.NumberDecimalDigits" /> property supplies the numeric precision.
     /// </remarks>
-    private static string FormatWithFixedPointFormat(Fraction fraction, string format,
-        NumberFormatInfo formatProvider) {
+    private static string FormatWithFixedPointFormat(Fraction fraction, string format, NumberFormatInfo formatProvider) {
         if (fraction.Numerator.IsZero) {
             return 0.ToString(format, formatProvider);
         }
@@ -273,19 +272,28 @@ public class DecimalNotationFormatter : ICustomFormatter {
             return fraction.ToDouble().ToString(format, formatProvider);
         }
 
-        var sb = new StringBuilder(12 + maxNbDecimalsAfterRadix);
         if (maxNbDecimalsAfterRadix == 0) {
-            return sb.Append(Round(fraction.Numerator, fraction.Denominator).ToString(format, formatProvider)!).ToString();
+            return Round(fraction.Numerator, fraction.Denominator).ToString(format, formatProvider)!;
         }
 
         var roundedFraction = Round(fraction, maxNbDecimalsAfterRadix);
-        if (roundedFraction.IsNegative) {
-            sb.Append(formatProvider.NegativeSign);
-            roundedFraction = roundedFraction.Abs();
+        bool isPositive;
+        switch (roundedFraction.Numerator.Sign)
+        {
+            case 0:
+                return 0.ToString(format, formatProvider);
+            case 1:
+                isPositive = true;
+                break;
+            default:
+                isPositive = false;
+                roundedFraction = -roundedFraction;
+                break;
         }
 
-        if (roundedFraction.Numerator.IsZero) {
-            return sb.Append(0.ToString(format, formatProvider)).ToString();
+        var sb = new StringBuilder(12 + maxNbDecimalsAfterRadix);
+        if (!isPositive) {
+            sb.Append(formatProvider.NegativeSign);
         }
 
         return AppendDecimals(sb, roundedFraction, formatProvider, maxNbDecimalsAfterRadix).ToString();
@@ -314,30 +322,28 @@ public class DecimalNotationFormatter : ICustomFormatter {
             // not a valid "N" format: assuming a custom format
             return fraction.ToDouble().ToString(format, formatProvider);
         }
-        
-        var sb = new StringBuilder(3 + maxNbDecimals);
-
-        var isPositive = fraction.IsPositive;
-        if (!isPositive) {
-            fraction = fraction.Abs();
-        }
 
         if (maxNbDecimals == 0) {
             var roundedValue = Round(fraction.Numerator, fraction.Denominator);
-            if (roundedValue.IsZero) {
-                return 0.ToString(format, formatProvider);
-            }
-            
-            sb.Append(roundedValue.ToString(format, formatProvider)!);
-        } else {
-            var roundedFraction = Round(fraction, maxNbDecimals);
-            if (roundedFraction.Numerator.IsZero) {
-                return 0.ToString(format, formatProvider);
-            }
-
-            AppendDecimals(sb, roundedFraction, formatProvider, maxNbDecimals, "N0");
+            return roundedValue.ToString(format, formatProvider)!;
         }
 
+        var roundedFraction = Round(fraction, maxNbDecimals);
+        bool isPositive;
+        switch (roundedFraction.Numerator.Sign)
+        {
+            case 0:
+                return 0.ToString(format, formatProvider);
+            case 1:
+                isPositive = true;
+                break;
+            default:
+                isPositive = false;
+                roundedFraction = -roundedFraction;
+                break;
+        }
+        
+        var sb = AppendDecimals(new StringBuilder(6 + maxNbDecimals), roundedFraction, formatProvider, maxNbDecimals, "N0");
         return isPositive
             ? sb.ToString()
             : withNegativeSign(sb, formatProvider.NegativeSign, formatProvider.NumberNegativePattern);
@@ -368,7 +374,7 @@ public class DecimalNotationFormatter : ICustomFormatter {
     ///     is used.
     /// </remarks>
     private static string FormatWithPercentFormat(Fraction fraction, string format, NumberFormatInfo formatProvider) {
-        if (fraction.Numerator == BigInteger.Zero) {
+        if (fraction.Numerator.IsZero) {
             return 0.ToString(format, formatProvider);
         }
 
@@ -381,50 +387,54 @@ public class DecimalNotationFormatter : ICustomFormatter {
             return fraction.ToDouble().ToString(format, formatProvider);
         }
 
-        var sb = new StringBuilder(4 + maxNbDecimals);
-
-        var percentFormatInfo = new NumberFormatInfo {
-            NumberDecimalSeparator = formatProvider.PercentDecimalSeparator,
-            NumberGroupSeparator = formatProvider.PercentGroupSeparator,
-            NumberGroupSizes = formatProvider.PercentGroupSizes,
-            NativeDigits = formatProvider.NativeDigits,
-            DigitSubstitution = formatProvider.DigitSubstitution
-        };
-
+        StringBuilder sb;
+        bool isPositive;
         if (maxNbDecimals == 0) {
-            var roundedValue = Round(100 * fraction.Numerator, fraction.Denominator);
-            if (roundedValue.IsZero) {
-                return 0.ToString(format, formatProvider);
+            var roundedValue = Round(fraction.Numerator * 100, fraction.Denominator);
+            switch (roundedValue.Sign)
+            {
+                case 0:
+                    return 0.ToString(format, formatProvider);
+                case 1:
+                    isPositive = true;
+                    break;
+                default:
+                    isPositive = false;
+                    roundedValue = -roundedValue;
+                    break;
             }
-            
-            var percentFormatString = 'N' + maxNbDecimals.ToString();
-            if (fraction.IsPositive) {
-                sb.Append(roundedValue.ToString(percentFormatString, percentFormatInfo));
-                return withPositiveSign(sb, formatProvider.PercentSymbol, formatProvider.PercentPositivePattern);
-            }
 
-            sb.Append((-roundedValue).ToString(percentFormatString, percentFormatInfo));
-            return withNegativeSign(sb, formatProvider.PercentSymbol, formatProvider.NegativeSign, formatProvider.PercentNegativePattern);
-        }
-
-        var isPositive = fraction.IsPositive;
-
-        if (fraction.IsPositive) {
-            fraction *= 100;
+            var percentFormatInfo = new NumberFormatInfo {
+                NumberDecimalSeparator = formatProvider.PercentDecimalSeparator,
+                NumberGroupSeparator = formatProvider.PercentGroupSeparator,
+                NumberGroupSizes = formatProvider.PercentGroupSizes,
+                NativeDigits = formatProvider.NativeDigits,
+                DigitSubstitution = formatProvider.DigitSubstitution
+            };
+            sb = new StringBuilder(roundedValue.ToString("N0", percentFormatInfo));
         } else {
-            fraction *= -100;
-        }
-
-        var roundedFraction = Round(fraction, maxNbDecimals);
-        if (roundedFraction.Numerator.IsZero || roundedFraction.Denominator.IsOne) {
-            if (roundedFraction.Numerator.IsZero) {
-                return 0.ToString(format, formatProvider);
+            var roundedFraction = Round(fraction * 100, maxNbDecimals);
+            switch (roundedFraction.Numerator.Sign)
+            {
+                case 0:
+                    return 0.ToString(format, formatProvider);
+                case 1:
+                    isPositive = true;
+                    break;
+                default:
+                    isPositive = false;
+                    roundedFraction = -roundedFraction;
+                    break;
             }
-            
-            var percentFormatString = 'N' + maxNbDecimals.ToString();
-            sb.Append(roundedFraction.Numerator.ToString(percentFormatString, percentFormatInfo)!);
-        } else {
-            AppendDecimals(sb, roundedFraction, percentFormatInfo, maxNbDecimals, "N0");
+
+            var percentFormatInfo = new NumberFormatInfo {
+                NumberDecimalSeparator = formatProvider.PercentDecimalSeparator,
+                NumberGroupSeparator = formatProvider.PercentGroupSeparator,
+                NumberGroupSizes = formatProvider.PercentGroupSizes,
+                NativeDigits = formatProvider.NativeDigits,
+                DigitSubstitution = formatProvider.DigitSubstitution
+            };
+            sb = AppendDecimals(new StringBuilder(8 + maxNbDecimals), roundedFraction, percentFormatInfo, maxNbDecimals, "N0");
         }
 
         return isPositive
@@ -500,7 +510,26 @@ public class DecimalNotationFormatter : ICustomFormatter {
             return fraction.ToDouble().ToString(format, formatProvider);
         }
 
-        var sb = new StringBuilder(4 + maxNbDecimals);
+        if (maxNbDecimals == 0) {
+            var roundedValue = Round(fraction.Numerator, fraction.Denominator);
+            return roundedValue.ToString(format, formatProvider)!;
+        }
+
+        var roundedFraction = Round(fraction, maxNbDecimals);
+        
+        bool isPositive;
+        switch (roundedFraction.Numerator.Sign)
+        {
+            case 0:
+                return 0.ToString(format, formatProvider);
+            case 1:
+                isPositive = true;
+                break;
+            default:
+                isPositive = false;
+                roundedFraction = -roundedFraction;
+                break;
+        }
 
         var currencyFormatInfo = new NumberFormatInfo {
             NumberDecimalSeparator = formatProvider.CurrencyDecimalSeparator,
@@ -510,37 +539,7 @@ public class DecimalNotationFormatter : ICustomFormatter {
             DigitSubstitution = formatProvider.DigitSubstitution
         };
 
-        if (maxNbDecimals == 0) {
-            var roundedValue = Round(fraction.Numerator, fraction.Denominator);
-            if (roundedValue.IsZero) {
-                return 0.ToString(format, formatProvider);
-            }
-
-            var currencyFormatString = 'N' + maxNbDecimals.ToString();
-            if (fraction.IsPositive) {
-                sb.Append(roundedValue.ToString(currencyFormatString, currencyFormatInfo));
-                return withPositiveSign(sb, formatProvider.CurrencySymbol, formatProvider.CurrencyPositivePattern);
-            }
-
-            sb.Append((-roundedValue).ToString(currencyFormatString, currencyFormatInfo));
-            return withNegativeSign(sb, formatProvider.CurrencySymbol, formatProvider.NegativeSign,
-                formatProvider.CurrencyNegativePattern);
-        }
-
-        var isPositive = fraction.IsPositive;
-
-        if (!fraction.IsPositive) {
-            fraction = fraction.Abs();
-        }
-
-        var roundedFraction = Round(fraction, maxNbDecimals);
-
-        if (roundedFraction.Numerator.IsZero) {
-            return 0.ToString(format, formatProvider);
-        }
-
-        AppendDecimals(sb, roundedFraction, currencyFormatInfo, maxNbDecimals, "N0");
-
+        var sb = AppendDecimals(new StringBuilder(8 + maxNbDecimals), roundedFraction, currencyFormatInfo, maxNbDecimals, "N0");
         return isPositive
             ? withPositiveSign(sb, formatProvider.CurrencySymbol, formatProvider.CurrencyPositivePattern)
             : withNegativeSign(sb, formatProvider.CurrencySymbol, formatProvider.NegativeSign,
@@ -854,8 +853,8 @@ public class DecimalNotationFormatter : ICustomFormatter {
         var decimalsAdded = 0;
         while (!remainder.IsZero && decimalsAdded++ < nbDecimals - 1) {
             denominator = PreviousPowerOfTen(denominator, nbDecimals - decimalsAdded + 1);
-            var digit = (int)BigInteger.DivRem(remainder, denominator, out remainder);
-            sb.Append(digit.ToString(formatProvider));
+            var digit = (char)('0' + (int)BigInteger.DivRem(remainder, denominator, out remainder));
+            sb.Append(digit);
         }
 
         if (remainder.IsZero) {
@@ -908,8 +907,8 @@ public class DecimalNotationFormatter : ICustomFormatter {
         var decimalsRemaining = maxNbDecimals;
         do {
             denominator = PreviousPowerOfTen(denominator, decimalsRemaining);
-            var digit = (int)BigInteger.DivRem(remainder, denominator, out remainder);
-            sb.Append(digit.ToString(formatProvider));
+            var digit = (char)('0' + (int)BigInteger.DivRem(remainder, denominator, out remainder));
+            sb.Append(digit);
             decimalsRemaining--;
         } while (!remainder.IsZero && decimalsRemaining > 0);
 
