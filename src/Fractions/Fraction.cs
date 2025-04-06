@@ -273,7 +273,8 @@ public readonly partial struct Fraction :
             return numerator.IsOne || numerator == BigInteger.MinusOne;
         }
 
-        return BigInteger.GreatestCommonDivisor(numerator, denominator).IsOne;
+        return !value._normalizationNotApplied ||
+               BigInteger.GreatestCommonDivisor(numerator, denominator).IsOne;
     }
 
     /// <summary>Determines if a value represents an even integral number.</summary>
@@ -282,8 +283,16 @@ public readonly partial struct Fraction :
     ///     <see langword="true" /> if <paramref name="value" /> is an even integer; otherwise, <see langword="false" />.
     /// </returns>
     public static bool IsEvenInteger(Fraction value) {
-        var fraction = value.Reduce();
-        return fraction.Denominator.IsOne && fraction.Numerator.IsEven;
+        if (value.Denominator.IsZero) {
+            return false;
+        }
+
+        if (!value._normalizationNotApplied) {
+            return BigInteger.Abs(value.Denominator).IsOne && value.Numerator.IsEven;
+        }
+
+        var quotient = BigInteger.DivRem(value.Numerator, value.Denominator, out var remainder);
+        return remainder.IsZero && quotient.IsEven;
     }
 
     /// <summary>Determines if a value is finite.</summary>
@@ -324,8 +333,16 @@ public readonly partial struct Fraction :
     ///     <see langword="true" /> if <paramref name="value" /> is an odd integer; otherwise, <see langword="false" />.
     /// </returns>
     public static bool IsOddInteger(Fraction value) {
-        var fraction = value.Reduce();
-        return fraction.Denominator.IsOne && !fraction.Numerator.IsEven;
+        if (value.Denominator.IsZero) {
+            return false;
+        }
+
+        if (!value._normalizationNotApplied) {
+            return BigInteger.Abs(value.Denominator).IsOne && !value.Numerator.IsEven;
+        }
+
+        var quotient = BigInteger.DivRem(value.Numerator, value.Denominator, out var remainder);
+        return remainder.IsZero && !quotient.IsEven;
     }
 
     #endregion
