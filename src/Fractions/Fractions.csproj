@@ -8,21 +8,15 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageReleaseNotes>8.0.0
-- Added support for NaN and Infinity by https://github.com/lipchev
-- New properties IsNaN, IsInfinity, IsPositiveInfinity, IsNegativeInfinity by https://github.com/lipchev
-- Adding a debugger display proxy by https://github.com/lipchev
-- Various methods were optimized by https://github.com/lipchev
-- Use the potential of Span&lt;T&gt; where sensible and possible (TryParse, FromDecimal) by https://github.com/lipchev
-- No longer reduce non-normalized fractions when used in mathematical operations - by https://github.com/lipchev
+    <PackageReleaseNotes>9.0.0
+    
+- Implemented the INumber&lt;Fraction&gt; interface
 
-Breaking changes
-
-- Mathematical operations no longer automatically generate normalized fractions if one of the operands is an non-normalized fraction. This has an impact on your calculations, especially if you have used the JsonFractionConverter with default settings. In such cases, deserialized fractions create non-normalized fractions, which can lead to changed behavior when calling ToString. Please refer the README section Working with non-normalized fractions
-- The default behavior of the .Equals(Fraction) method has changed: Equals now compares the calculated value from the numerator/denominator (1/2 = 2/4).
-- The standard function ToString() now depends on the active culture (CultureInfo.CurrentCulture). The reason is that NaN and Infinity should be displayed in the system language or the corresponding symbol should be used.
-- Argument name for Fraction.TryParse(..) changed from fractionString to value.
-- A fraction of 0/0 no longer has the value 0, but means NaN (not a number). Any fraction in the form x/0 is no longer a valid number. A denominator with the value 0 corresponds to, depending on the numerator, NaN, PositiveInfinity or NegativeInfinity.</PackageReleaseNotes>
+Please check 
+- https://github.com/Fractions-DotNet/Fractions/blob/master/Changelog.md and 
+- https://github.com/Fractions-DotNet/Fractions/blob/master/BreakingChanges.md 
+for more information.
+    </PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

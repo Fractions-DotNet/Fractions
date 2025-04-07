@@ -1,5 +1,13 @@
 ﻿# Changelog
 
+## 9.0.0
+
+- PR [Implemented the INumber<Fraction> interface](https://github.com/Fractions-DotNet/Fractions/pull/96) by [lipchev](https://github.com/lipchev)
+
+### Breaking changes
+
+- When using the .NET8 assembly, the data type implements the two interfaces `INumber<Fraction>` and `ISignedNumber<Fraction>` with the corresponding support but also possible side effects when using the generic [math functions](https://learn.microsoft.com/en-us/dotnet/standard/generics/math). For more information, see this [Microsoft blog article](https://devblogs.microsoft.com/dotnet/dotnet-7-generic-math/).
+
 ## 8.3.2
 - PR [Optimizing the PowerOfTen function for exponents in the range 18-54](https://github.com/danm-de/Fractions/pull/110) by [lipchev](https://github.com/lipchev)
 - PR [FromDecimal: replaced the usage of BigInteger.Pow(TEN, exponent)](https://github.com/danm-de/Fractions/pull/109) by [lipchev](https://github.com/lipchev)

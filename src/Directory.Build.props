@@ -18,13 +18,13 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>../../Fractions.snk</AssemblyOriginatorKeyFile>
 
-    <RepositoryUrl>https://github.com/danm-de/Fractions.git</RepositoryUrl>
+    <RepositoryUrl>https://github.com/Fractions-DotNet/Fractions.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
 
     <PackageIcon>Fraction.png</PackageIcon>
-    <PackageIconUrl>https://raw.githubusercontent.com/danm-de/Fractions/master/src/Fractions/Fraction.ico</PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/Fractions-DotNet/Fractions/master/src/Fractions/Fraction.ico</PackageIconUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/danm-de/Fractions</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/Fractions-DotNet/Fractions</PackageProjectUrl>
     <PackageTags>fraction math</PackageTags>
     <PackageReadmeFile>Readme.md</PackageReadmeFile>
 
