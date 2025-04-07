@@ -3,6 +3,7 @@
 ## 9.0.0
 
 - PR [Implemented the INumber<Fraction> interface](https://github.com/Fractions-DotNet/Fractions/pull/96) by [lipchev](https://github.com/lipchev)
+- PR [More DecimalQuantityFormatter performance optimizations](https://github.com/Fractions-DotNet/Fractions/pull/115) by [lipchev](https://github.com/lipchev)
 
 ### Breaking changes
 
