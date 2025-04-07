@@ -11,6 +11,7 @@
     <PackageReleaseNotes>9.0.0
     
 - Implemented the INumber&lt;Fraction&gt; interface
+- DecimalQuantityFormatter performance optimizations
 
 Please check 
 - https://github.com/Fractions-DotNet/Fractions/blob/master/Changelog.md and 
