@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using Fractions.Properties;
 
 namespace Fractions;
 
@@ -99,9 +100,12 @@ public readonly partial struct Fraction {
     /// <param name="denominator">The denominator of the fraction to be rounded.</param>
     /// <param name="mode">Specifies the strategy that mathematical rounding methods should use to round a number.</param>
     /// <returns>The number rounded to using the <paramref name="mode" /> rounding strategy.</returns>
+    /// <exception cref="OverflowException">
+    ///     Thrown when the denominator is zero, meaning the value is NaN or infinity.
+    /// </exception>
     private static BigInteger RoundToBigInteger(BigInteger numerator, BigInteger denominator, MidpointRounding mode) {
         if (denominator.IsZero) {
-            throw new DivideByZeroException();
+            throw new OverflowException(Resources.ValueMustNotNanOrInfinity);
         }
 
         if (numerator.IsZero || denominator.IsOne) {

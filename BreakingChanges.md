@@ -9,6 +9,7 @@ This file contains a summary of the most important breaking changes, sorted by v
 ### 9.0.0
 
 - When using the .NET8 assembly, the data type implements the two interfaces `INumber<Fraction>` and `ISignedNumber<Fraction>` with the corresponding support but also possible side effects when using the generic [math functions](https://learn.microsoft.com/en-us/dotnet/standard/generics/math). For more information, see this [Microsoft blog article](https://devblogs.microsoft.com/dotnet/dotnet-7-generic-math/).
+- Type conversions to integers or decimal types without support for _NaN_ or _Infinity_ now throw an `OverflowException` instead of a `DivideByZeroException`.
 
 ### 8.0.0
 

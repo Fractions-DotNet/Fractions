@@ -110,8 +110,8 @@ public class When_user_converts_fraction_to_BigInteger : Spec {
 [TestFixture]
 public class When_converting_NaN : Spec {
     [Test]
-    public void ToDecimal_should_throw_a_DivideByZeroException() {
-        Invoking(() => Fraction.NaN.ToDecimal()).Should().Throw<DivideByZeroException>();
+    public void ToDecimal_should_throw_a_OverflowException() {
+        Invoking(() => Fraction.NaN.ToDecimal()).Should().Throw<OverflowException>();
     }
     
     [Test]
@@ -120,28 +120,28 @@ public class When_converting_NaN : Spec {
     }
 
     [Test]
-    public void ToInt32_should_throw_a_DivideByZeroException() {
-        Invoking(() => Fraction.NaN.ToInt32()).Should().Throw<DivideByZeroException>();
+    public void ToInt32_should_throw_a_OverflowException() {
+        Invoking(() => Fraction.NaN.ToInt32()).Should().Throw<OverflowException>();
     }
 
     [Test]
-    public void ToInt64_should_throw_a_DivideByZeroException() {
-        Invoking(() => Fraction.NaN.ToInt64()).Should().Throw<DivideByZeroException>();
+    public void ToInt64_should_throw_a_OverflowException() {
+        Invoking(() => Fraction.NaN.ToInt64()).Should().Throw<OverflowException>();
     }
 
     [Test]
-    public void ToUInt32_should_throw_a_DivideByZeroException() {
-        Invoking(() => Fraction.NaN.ToUInt32()).Should().Throw<DivideByZeroException>();
+    public void ToUInt32_should_throw_a_OverflowException() {
+        Invoking(() => Fraction.NaN.ToUInt32()).Should().Throw<OverflowException>();
     }
 
     [Test]
-    public void ToUInt64_should_throw_a_DivideByZeroException() {
-        Invoking(() => Fraction.NaN.ToUInt64()).Should().Throw<DivideByZeroException>();
+    public void ToUInt64_should_throw_a_OverflowException() {
+        Invoking(() => Fraction.NaN.ToUInt64()).Should().Throw<OverflowException>();
     }
 
     [Test]
-    public void ToBigInteger_should_throw_a_DivideByZeroException() {
-        Invoking(() => Fraction.NaN.ToBigInteger()).Should().Throw<DivideByZeroException>();
+    public void ToBigInteger_should_throw_a_OverflowException() {
+        Invoking(() => Fraction.NaN.ToBigInteger()).Should().Throw<OverflowException>();
     }
 
     [Test]
@@ -153,8 +153,8 @@ public class When_converting_NaN : Spec {
 [TestFixture]
 public class When_converting_PositiveInfinity : Spec {
     [Test]
-    public void ToDecimal_should_throw_a_DivideByZeroException() {
-        Invoking(() => Fraction.PositiveInfinity.ToDecimal()).Should().Throw<DivideByZeroException>();
+    public void ToDecimal_should_throw_a_OverflowException() {
+        Invoking(() => Fraction.PositiveInfinity.ToDecimal()).Should().Throw<OverflowException>();
     }
     
     [Test]
@@ -163,28 +163,28 @@ public class When_converting_PositiveInfinity : Spec {
     }
     
     [Test]
-    public void ToInt32_should_throw_a_DivideByZeroException() {
-        Invoking(() => Fraction.PositiveInfinity.ToInt32()).Should().Throw<DivideByZeroException>();
+    public void ToInt32_should_throw_a_OverflowException() {
+        Invoking(() => Fraction.PositiveInfinity.ToInt32()).Should().Throw<OverflowException>();
     }
 
     [Test]
-    public void ToInt64_should_throw_a_DivideByZeroException() {
-        Invoking(() => Fraction.PositiveInfinity.ToInt64()).Should().Throw<DivideByZeroException>();
+    public void ToInt64_should_throw_a_OverflowException() {
+        Invoking(() => Fraction.PositiveInfinity.ToInt64()).Should().Throw<OverflowException>();
     }
 
     [Test]
-    public void ToUInt32_should_throw_a_DivideByZeroException() {
-        Invoking(() => Fraction.PositiveInfinity.ToUInt32()).Should().Throw<DivideByZeroException>();
+    public void ToUInt32_should_throw_a_OverflowException() {
+        Invoking(() => Fraction.PositiveInfinity.ToUInt32()).Should().Throw<OverflowException>();
     }
 
     [Test]
-    public void ToUInt64_should_throw_a_DivideByZeroException() {
-        Invoking(() => Fraction.PositiveInfinity.ToUInt64()).Should().Throw<DivideByZeroException>();
+    public void ToUInt64_should_throw_a_OverflowException() {
+        Invoking(() => Fraction.PositiveInfinity.ToUInt64()).Should().Throw<OverflowException>();
     }
 
     [Test]
-    public void ToBigInteger_should_throw_a_DivideByZeroException() {
-        Invoking(() => Fraction.PositiveInfinity.ToBigInteger()).Should().Throw<DivideByZeroException>();
+    public void ToBigInteger_should_throw_a_OverflowException() {
+        Invoking(() => Fraction.PositiveInfinity.ToBigInteger()).Should().Throw<OverflowException>();
     }
 
     [Test]
@@ -196,8 +196,8 @@ public class When_converting_PositiveInfinity : Spec {
 [TestFixture]
 public class When_converting_NegativeInfinity : Spec {
     [Test]
-    public void ToDecimal_should_throw_a_DivideByZeroException() {
-        Invoking(() => Fraction.NegativeInfinity.ToDecimal()).Should().Throw<DivideByZeroException>();
+    public void ToDecimal_should_throw_a_OverflowException() {
+        Invoking(() => Fraction.NegativeInfinity.ToDecimal()).Should().Throw<OverflowException>();
     }
     
     [Test]
@@ -206,28 +206,28 @@ public class When_converting_NegativeInfinity : Spec {
     }
 
     [Test]
-    public void ToInt32_should_throw_a_DivideByZeroException() {
-        Invoking(() => Fraction.NegativeInfinity.ToInt32()).Should().Throw<DivideByZeroException>();
+    public void ToInt32_should_throw_a_OverflowException() {
+        Invoking(() => Fraction.NegativeInfinity.ToInt32()).Should().Throw<OverflowException>();
     }
 
     [Test]
-    public void ToInt64_should_throw_a_DivideByZeroException() {
-        Invoking(() => Fraction.NegativeInfinity.ToInt64()).Should().Throw<DivideByZeroException>();
+    public void ToInt64_should_throw_a_OverflowException() {
+        Invoking(() => Fraction.NegativeInfinity.ToInt64()).Should().Throw<OverflowException>();
     }
 
     [Test]
-    public void ToUInt32_should_throw_a_DivideByZeroException() {
-        Invoking(() => Fraction.NegativeInfinity.ToUInt32()).Should().Throw<DivideByZeroException>();
+    public void ToUInt32_should_throw_a_OverflowException() {
+        Invoking(() => Fraction.NegativeInfinity.ToUInt32()).Should().Throw<OverflowException>();
     }
 
     [Test]
-    public void ToUInt64_should_throw_a_DivideByZeroException() {
-        Invoking(() => Fraction.NegativeInfinity.ToUInt64()).Should().Throw<DivideByZeroException>();
+    public void ToUInt64_should_throw_a_OverflowException() {
+        Invoking(() => Fraction.NegativeInfinity.ToUInt64()).Should().Throw<OverflowException>();
     }
 
     [Test]
-    public void ToBigInteger_should_throw_a_DivideByZeroException() {
-        Invoking(() => Fraction.NegativeInfinity.ToBigInteger()).Should().Throw<DivideByZeroException>();
+    public void ToBigInteger_should_throw_a_OverflowException() {
+        Invoking(() => Fraction.NegativeInfinity.ToBigInteger()).Should().Throw<OverflowException>();
     }
 
     [Test]

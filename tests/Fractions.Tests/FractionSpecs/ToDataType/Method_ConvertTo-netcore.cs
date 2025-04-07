@@ -184,27 +184,27 @@ public class When_converting_NaN_to_a_number : NumberConversionSpec {
     public void CreateChecked_should_return_NaN_or_throw_an_exception() {
         double.CreateChecked(Fraction.NaN).Should().Be(double.NaN);
         Complex.CreateChecked(Fraction.NaN).Should().Be(new Complex(double.NaN, 0));
-        Invoking(() => decimal.CreateChecked(Fraction.NaN)).Should().Throw<DivideByZeroException>();
+        Invoking(() => decimal.CreateChecked(Fraction.NaN)).Should().Throw<OverflowException>();
         float.CreateChecked(Fraction.NaN).Should().Be(float.NaN);
         Half.CreateChecked(Fraction.NaN).Should().Be(Half.NaN);
-        Invoking(() => BigInteger.CreateChecked(Fraction.NaN)).Should().Throw<DivideByZeroException>();
-        Invoking(() => Int128.CreateChecked(Fraction.NaN)).Should().Throw<DivideByZeroException>();
-        Invoking(() => UInt128.CreateChecked(Fraction.NaN)).Should().Throw<DivideByZeroException>();
-        Invoking(() => long.CreateChecked(Fraction.NaN)).Should().Throw<DivideByZeroException>();
-        Invoking(() => ulong.CreateChecked(Fraction.NaN)).Should().Throw<DivideByZeroException>();
-        Invoking(() => int.CreateChecked(Fraction.NaN)).Should().Throw<DivideByZeroException>();
-        Invoking(() => int.CreateChecked(Fraction.NaN)).Should().Throw<DivideByZeroException>();
-        Invoking(() => uint.CreateChecked(Fraction.NaN)).Should().Throw<DivideByZeroException>();
-        Invoking(() => nint.CreateChecked(Fraction.NaN)).Should().Throw<DivideByZeroException>();
-        Invoking(() => nint.CreateChecked(Fraction.NaN)).Should().Throw<DivideByZeroException>();
-        Invoking(() => UIntPtr.CreateChecked(Fraction.NaN)).Should().Throw<DivideByZeroException>();
-        Invoking(() => short.CreateChecked(Fraction.NaN)).Should().Throw<DivideByZeroException>();
-        Invoking(() => ushort.CreateChecked(Fraction.NaN)).Should().Throw<DivideByZeroException>();
-        Invoking(() => byte.CreateChecked(Fraction.NaN)).Should().Throw<DivideByZeroException>();
-        Invoking(() => sbyte.CreateChecked(Fraction.NaN)).Should().Throw<DivideByZeroException>();
+        Invoking(() => BigInteger.CreateChecked(Fraction.NaN)).Should().Throw<OverflowException>();
+        Invoking(() => Int128.CreateChecked(Fraction.NaN)).Should().Throw<OverflowException>();
+        Invoking(() => UInt128.CreateChecked(Fraction.NaN)).Should().Throw<OverflowException>();
+        Invoking(() => long.CreateChecked(Fraction.NaN)).Should().Throw<OverflowException>();
+        Invoking(() => ulong.CreateChecked(Fraction.NaN)).Should().Throw<OverflowException>();
+        Invoking(() => int.CreateChecked(Fraction.NaN)).Should().Throw<OverflowException>();
+        Invoking(() => int.CreateChecked(Fraction.NaN)).Should().Throw<OverflowException>();
+        Invoking(() => uint.CreateChecked(Fraction.NaN)).Should().Throw<OverflowException>();
+        Invoking(() => nint.CreateChecked(Fraction.NaN)).Should().Throw<OverflowException>();
+        Invoking(() => nint.CreateChecked(Fraction.NaN)).Should().Throw<OverflowException>();
+        Invoking(() => UIntPtr.CreateChecked(Fraction.NaN)).Should().Throw<OverflowException>();
+        Invoking(() => short.CreateChecked(Fraction.NaN)).Should().Throw<OverflowException>();
+        Invoking(() => ushort.CreateChecked(Fraction.NaN)).Should().Throw<OverflowException>();
+        Invoking(() => byte.CreateChecked(Fraction.NaN)).Should().Throw<OverflowException>();
+        Invoking(() => sbyte.CreateChecked(Fraction.NaN)).Should().Throw<OverflowException>();
         // although there isn't any char.CreateChecked(..) method, all numeric types support this conversion as well
         Invoking(() => CreateChecked<char, double>(double.NaN)).Should().Throw<OverflowException>();
-        Invoking(() => CreateChecked<char, Fraction>(Fraction.NaN)).Should().Throw<DivideByZeroException>();
+        Invoking(() => CreateChecked<char, Fraction>(Fraction.NaN)).Should().Throw<OverflowException>();
     }
 
     [Test]
@@ -262,30 +262,30 @@ public class When_converting_NaN_to_a_number : NumberConversionSpec {
 [TestFixture]
 public class When_converting_PositiveInfinity_to_a_number : NumberConversionSpec {
     [Test]
-    public void CreateChecked_should_return_PositiveInfinity_or_throw_a_DivideByZeroException() {
+    public void CreateChecked_should_return_PositiveInfinity_or_throw_a_OverflowException() {
         double.CreateChecked(Fraction.PositiveInfinity).Should().Be(double.PositiveInfinity);
         Complex.CreateChecked(Fraction.PositiveInfinity).Should().Be(new Complex(double.PositiveInfinity, 0));
-        Invoking(() => decimal.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<DivideByZeroException>();
+        Invoking(() => decimal.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<OverflowException>();
         float.CreateChecked(Fraction.PositiveInfinity).Should().Be(float.PositiveInfinity);
         Half.CreateChecked(Fraction.PositiveInfinity).Should().Be(Half.PositiveInfinity);
-        Invoking(() => BigInteger.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => Int128.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => UInt128.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => long.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => ulong.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => int.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => int.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => uint.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => nint.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => nint.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => UIntPtr.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => short.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => ushort.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => byte.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => sbyte.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<DivideByZeroException>();
+        Invoking(() => BigInteger.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => Int128.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => UInt128.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => long.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => ulong.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => int.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => int.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => uint.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => nint.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => nint.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => UIntPtr.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => short.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => ushort.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => byte.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => sbyte.CreateChecked(Fraction.PositiveInfinity)).Should().Throw<OverflowException>();
         // although there isn't any char.CreateChecked(..) method, all numeric types support this conversion as well
         Invoking(() => CreateChecked<char, double>(double.PositiveInfinity)).Should().Throw<OverflowException>();
-        Invoking(() => CreateChecked<char, Fraction>(Fraction.PositiveInfinity)).Should().Throw<DivideByZeroException>();
+        Invoking(() => CreateChecked<char, Fraction>(Fraction.PositiveInfinity)).Should().Throw<OverflowException>();
     }
 
     [Test]
@@ -350,30 +350,30 @@ public class When_converting_PositiveInfinity_to_a_number : NumberConversionSpec
 [TestFixture]
 public class When_converting_NegativeInfinity_to_a_number : NumberConversionSpec {
     [Test]
-    public void CreateChecked_should_return_NegativeInfinity_or_throw_a_DivideByZeroException() {
+    public void CreateChecked_should_return_NegativeInfinity_or_throw_a_OverflowException() {
         double.CreateChecked(Fraction.NegativeInfinity).Should().Be(double.NegativeInfinity);
         Complex.CreateChecked(Fraction.NegativeInfinity).Should().Be(new Complex(double.NegativeInfinity, 0));
-        Invoking(() => decimal.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<DivideByZeroException>();
+        Invoking(() => decimal.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<OverflowException>();
         float.CreateChecked(Fraction.NegativeInfinity).Should().Be(float.NegativeInfinity);
         Half.CreateChecked(Fraction.NegativeInfinity).Should().Be(Half.NegativeInfinity);
-        Invoking(() => BigInteger.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => Int128.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => UInt128.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => long.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => ulong.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => int.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => int.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => uint.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => nint.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => nint.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => UIntPtr.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => short.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => ushort.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => byte.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<DivideByZeroException>();
-        Invoking(() => sbyte.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<DivideByZeroException>();
+        Invoking(() => BigInteger.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => Int128.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => UInt128.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => long.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => ulong.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => int.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => int.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => uint.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => nint.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => nint.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => UIntPtr.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => short.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => ushort.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => byte.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<OverflowException>();
+        Invoking(() => sbyte.CreateChecked(Fraction.NegativeInfinity)).Should().Throw<OverflowException>();
         // although there isn't any char.CreateChecked(..) method, all numeric types support this conversion as well
         Invoking(() => CreateChecked<char, double>(double.NegativeInfinity)).Should().Throw<OverflowException>();
-        Invoking(() => CreateChecked<char, Fraction>(Fraction.NegativeInfinity)).Should().Throw<DivideByZeroException>();
+        Invoking(() => CreateChecked<char, Fraction>(Fraction.NegativeInfinity)).Should().Throw<OverflowException>();
     }
 
     [Test]

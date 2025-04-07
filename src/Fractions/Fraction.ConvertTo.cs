@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using Fractions.Properties;
 
 namespace Fractions;
 
@@ -13,9 +14,8 @@ public readonly partial struct Fraction {
     ///     Converts the fraction to a 32-bit signed integer.
     /// </summary>
     /// <returns>The result of the integer division of the numerator by the denominator.</returns>
-    /// <exception cref="DivideByZeroException">Thrown when the denominator is zero - i.e. the value is NaN or Infinity.</exception>
     /// <exception cref="OverflowException">
-    ///     Thrown when the result of the division is outside the range of a 32-bit signed integer.
+    ///     Thrown when the result of the division is outside the range of a 32-bit signed integer or when the denominator is zero, meaning the value is NaN or infinity.
     /// </exception>
     public int ToInt32() {
         return (int)ToBigInteger();
@@ -25,9 +25,8 @@ public readonly partial struct Fraction {
     ///     Converts the fraction to a 64-bit signed integer.
     /// </summary>
     /// <returns>The result of the integer division of the numerator by the denominator.</returns>
-    /// <exception cref="DivideByZeroException">Thrown when the denominator is zero - i.e. the value is NaN or Infinity.</exception>
     /// <exception cref="OverflowException">
-    ///     Thrown when the result of the division is outside the range of a 64-bit signed integer.
+    ///     Thrown when the result of the division is outside the range of a 64-bit signed integer or when the denominator is zero, meaning the value is NaN or infinity.
     /// </exception>
     public long ToInt64() {
         return (long)ToBigInteger();
@@ -37,9 +36,8 @@ public readonly partial struct Fraction {
     ///     Converts the fraction to a 32-bit unsigned integer.
     /// </summary>
     /// <returns>The result of the integer division of the numerator by the denominator.</returns>
-    /// <exception cref="DivideByZeroException">Thrown when the denominator is zero - i.e. the value is NaN or Infinity.</exception>
     /// <exception cref="OverflowException">
-    ///     Thrown when the result of the division is outside the range of a 32-bit unsigned integer.
+    ///     Thrown when the result of the division is outside the range of a 32-bit unsigned integer or when the denominator is zero, meaning the value is NaN or infinity.
     /// </exception>
     [CLSCompliant(false)]
     public uint ToUInt32() {
@@ -50,9 +48,8 @@ public readonly partial struct Fraction {
     ///     Converts the fraction to a 64-bit unsigned integer.
     /// </summary>
     /// <returns>The result of the integer division of the numerator by the denominator.</returns>
-    /// <exception cref="DivideByZeroException">Thrown when the denominator is zero - i.e. the value is NaN or Infinity.</exception>
     /// <exception cref="OverflowException">
-    ///     Thrown when the result of the division is outside the range of a 64-bit unsigned integer.
+    ///     Thrown when the result of the division is outside the range of a 64-bit unsigned integer or when the denominator is zero, meaning the value is NaN or infinity.
     /// </exception>
     [CLSCompliant(false)]
     public ulong ToUInt64() {
@@ -63,9 +60,14 @@ public readonly partial struct Fraction {
     ///     Converts the fraction to a BigInteger.
     /// </summary>
     /// <returns>The result of the integer division of the numerator by the denominator.</returns>
-    /// <exception cref="DivideByZeroException">Thrown when the denominator is zero - i.e. the value is NaN or Infinity.</exception>
+    /// <exception cref="OverflowException">Thrown when the denominator is zero - i.e. the value is NaN or Infinity.</exception>
     public BigInteger ToBigInteger() {
         var denominator = Denominator;
+
+        if (denominator.IsZero) {
+            throw new OverflowException(Resources.ValueMustNotNanOrInfinity);
+        }
+
         return denominator.IsOne ? Numerator : Numerator / denominator;
     }
 
@@ -76,17 +78,16 @@ public readonly partial struct Fraction {
     ///     The fraction represented as a decimal. If the number exceeds decimal precision, the extra decimals are lost
     ///     due to rounding.
     /// </returns>
-    /// <exception cref="DivideByZeroException">Thrown when the denominator is zero - i.e. the value is NaN or Infinity.</exception>
     /// <exception cref="OverflowException">
-    ///     Thrown when the number represented by this fraction is outside the decimal range.
+    ///     Thrown when the number represented by this fraction is outside the decimal range or when the denominator is zero, meaning the value is NaN or infinity.
     /// </exception>
     public decimal ToDecimal() {
         var numerator = Numerator;
         var denominator = Denominator;
         switch (denominator.Sign) {
             case 0: {
-                throw new DivideByZeroException();
-            }
+                throw new OverflowException(Resources.ValueMustNotNanOrInfinity);
+                }
             case -1: {
                 numerator = -numerator;
                 denominator = -denominator;
