@@ -4,6 +4,7 @@
 
 - PR [Implemented the INumber<Fraction> interface](https://github.com/Fractions-DotNet/Fractions/pull/96) by [lipchev](https://github.com/lipchev)
 - PR [More DecimalQuantityFormatter performance optimizations](https://github.com/Fractions-DotNet/Fractions/pull/115) by [lipchev](https://github.com/lipchev)
+- Replaced [FluentAssertions](https://xceed.com/products/unit-testing/fluent-assertions/) with [AwesomeAssertions](https://awesomeassertions.org/)
 
 ### Breaking changes
 
