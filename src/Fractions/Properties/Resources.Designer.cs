@@ -131,5 +131,14 @@ namespace Fractions.Properties {
                 return ResourceManager.GetString("TypeXnotSupported", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The value must not be NaN or +/-infinity..
+        /// </summary>
+        internal static string ValueMustNotNanOrInfinity {
+            get {
+                return ResourceManager.GetString("ValueMustNotNanOrInfinity", resourceCulture);
+            }
+        }
     }
 }

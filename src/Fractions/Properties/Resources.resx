@@ -141,4 +141,7 @@
   <data name="InvalidTokenType" xml:space="preserve">
     <value>Invalid token type {0} (expected {1}).</value>
   </data>
+  <data name="ValueMustNotNanOrInfinity" xml:space="preserve">
+    <value>The value must not be NaN or +/-infinity.</value>
+  </data>
 </root>

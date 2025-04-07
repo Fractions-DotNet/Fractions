@@ -5,10 +5,12 @@
 - PR [Implemented the INumber<Fraction> interface](https://github.com/Fractions-DotNet/Fractions/pull/96) by [lipchev](https://github.com/lipchev)
 - PR [More DecimalQuantityFormatter performance optimizations](https://github.com/Fractions-DotNet/Fractions/pull/115) by [lipchev](https://github.com/lipchev)
 - Replaced [FluentAssertions](https://xceed.com/products/unit-testing/fluent-assertions/) with [AwesomeAssertions](https://awesomeassertions.org/)
+- Type conversions to integers or decimal types without support for _NaN_ or _Infinity_ now throw an `OverflowException` instead of a `DivideByZeroException`.
 
 ### Breaking changes
 
 - When using the .NET8 assembly, the data type implements the two interfaces `INumber<Fraction>` and `ISignedNumber<Fraction>` with the corresponding support but also possible side effects when using the generic [math functions](https://learn.microsoft.com/en-us/dotnet/standard/generics/math). For more information, see this [Microsoft blog article](https://devblogs.microsoft.com/dotnet/dotnet-7-generic-math/).
+- Type conversions to integers or decimal types without support for _NaN_ or _Infinity_ now throw an `OverflowException` instead of a `DivideByZeroException`. 
 
 ## 8.3.2
 - PR [Optimizing the PowerOfTen function for exponents in the range 18-54](https://github.com/danm-de/Fractions/pull/110) by [lipchev](https://github.com/lipchev)

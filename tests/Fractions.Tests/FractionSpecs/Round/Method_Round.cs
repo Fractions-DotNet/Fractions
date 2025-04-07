@@ -222,9 +222,9 @@ public class When_rounding_a_decimal_fraction : Spec {
 
     [Test]
     [TestCaseSource(nameof(RoundNaNToBigIntegerTestCases))]
-    public void The_result_of_rounding_NaN_to_BigInteger_should_be_a_DivideByZeroException(Fraction fraction,
+    public void The_result_of_rounding_NaN_to_BigInteger_should_be_a_OverflowException(Fraction fraction,
         MidpointRounding roundingMode) {
-        Invoking(() => Fraction.RoundToBigInteger(fraction, roundingMode)).Should().Throw<DivideByZeroException>();
+        Invoking(() => Fraction.RoundToBigInteger(fraction, roundingMode)).Should().Throw<OverflowException>();
     }
 
     private static IEnumerable RoundPositiveInfinityToBigIntegerTestCases =>
@@ -233,9 +233,9 @@ public class When_rounding_a_decimal_fraction : Spec {
 
     [Test]
     [TestCaseSource(nameof(RoundPositiveInfinityToBigIntegerTestCases))]
-    public void The_result_of_rounding_PositiveInfinity_to_BigInteger_should_throw_a_DivideByZeroException(
+    public void The_result_of_rounding_PositiveInfinity_to_BigInteger_should_throw_a_OverflowException(
         Fraction fraction, MidpointRounding roundingMode) {
-        Invoking(() => Fraction.RoundToBigInteger(fraction, roundingMode)).Should().Throw<DivideByZeroException>();
+        Invoking(() => Fraction.RoundToBigInteger(fraction, roundingMode)).Should().Throw<OverflowException>();
     }
 
     private static IEnumerable RoundNegativeInfinityToBigIntegerTestCases =>
@@ -244,9 +244,9 @@ public class When_rounding_a_decimal_fraction : Spec {
 
     [Test]
     [TestCaseSource(nameof(RoundNegativeInfinityToBigIntegerTestCases))]
-    public void The_result_of_rounding_NegativeInfinity_to_BigInteger_should_throw_a_DivideByZeroException(
+    public void The_result_of_rounding_NegativeInfinity_to_BigInteger_should_throw_a_OverflowException(
         Fraction fraction, MidpointRounding roundingMode) {
-        Invoking(() => Fraction.RoundToBigInteger(fraction, roundingMode)).Should().Throw<DivideByZeroException>();
+        Invoking(() => Fraction.RoundToBigInteger(fraction, roundingMode)).Should().Throw<OverflowException>();
     }
 
     [Test]
