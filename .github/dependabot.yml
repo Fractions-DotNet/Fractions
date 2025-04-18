@@ -1,0 +1,41 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "16:00"
+      timezone: "Europe/Berlin"
+    # Allow up to 5 open pull requests for GitHub Actions dependencies
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    # Rebase open pull requests when changes are detected
+    rebase-strategy: "auto"
+
+  # Maintain dependencies for NuGet packages
+  - package-ecosystem: "nuget" 
+    directory: "/" 
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "16:00"
+      timezone: "Europe/Berlin"
+    # Allow up to 10 open pull requests for NuGet dependencies
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+    # Rebase open pull requests when changes are detected
+    rebase-strategy: "auto"
+    groups:
+      nunit:
+        patterns:
+          - "NUnit*"
